@@ -23,7 +23,7 @@ run_front:
 	$(DOCKER_CMD) -p ${PORT_FRONT}:5173 ${DOCKER_FRONT_CONFIG} --entrypoint=npm ${DOCKER_IMG_FRONT} run dev
 
 terminal_front:
-	$(DOCKER_CMD) ${DOCKER_FRONT_CONFIG} --entrypoint=/bin/sh ${DOCKER_IMG_FRONT}
+	$(DOCKER_CMD) -p ${PORT_FRONT}:5173 ${DOCKER_FRONT_CONFIG} --entrypoint=/bin/sh ${DOCKER_IMG_FRONT}
 
 # ---------------------------------------------------------------------
 
