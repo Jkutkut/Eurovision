@@ -39,3 +39,15 @@ terminal_back:
 	@# $(DOCKER_CMD) ${DOCKER_BACK_CONFIG} --entrypoint=/bin/sh ${DOCKER_IMG_BACK}
 
 # ---------------------------------------------------------------------
+
+create_db:
+	docker create --name db_eurovision -d cassandra:latest
+
+stop_db:
+	docker stop db_eurovision
+
+start_db:
+	docker start db_eurovision
+
+remove_db:
+	docker rm db_eurovision
