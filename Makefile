@@ -7,7 +7,7 @@ ifeq ($(OS),Darwin)
 endif
 
 FRONT_NAME = eurovision_front
-PORT_FRONT = 5173 # 8080
+PORT_FRONT = 5173# 8080
 
 BACK_NAME = eurovision_server
 PORT_BACK = 9000
@@ -16,7 +16,7 @@ DOCKER_CMD = docker run --rm -it
 
 # ---------------------------------------------------------------------
 
-DOCKER_FRONT_CONFIG = -v ${PWD}/front/${FRONT_NAME}:/app -w /app
+DOCKER_FRONT_CONFIG = -v ${PWD}/frontend/${FRONT_NAME}:/app -w /app
 DOCKER_IMG_FRONT = node:current-alpine3.16
 
 run_front:
@@ -27,8 +27,7 @@ terminal_front:
 
 # ---------------------------------------------------------------------
 
-DOCKER_BACK_CONFIG = -v ${PWD}/backend/:/app -w /app
-# DOCKER_BACK_CONFIG = -v ${PWD}/backend/${BACK_NAME}:/app -w /app
+DOCKER_BACK_CONFIG = -v ${PWD}/backend/${BACK_NAME}:/app -w /app
 DOCKER_IMG_BACK = node:current-alpine3.16
 
 run_back:
@@ -41,7 +40,7 @@ terminal_back:
 # ---------------------------------------------------------------------
 
 create_db:
-	docker create --name db_eurovision -d cassandra:latest
+	docker create --name db_eurovision cassandra:latest
 
 stop_db:
 	docker stop db_eurovision
