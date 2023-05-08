@@ -1,5 +1,6 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import Login from './pages/Login';
+import MainPage from './pages/MainPage';
 
 function App() {
 
@@ -12,9 +13,7 @@ function App() {
   }
 
   return (
-    <>
-      <h1>Hello world</h1>
-    </>
+    <MainPage user={login} />
   )
 }
 
