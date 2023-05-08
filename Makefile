@@ -27,7 +27,15 @@ terminal_front:
 
 # ---------------------------------------------------------------------
 
-DOCKER_BACK_CONFIG = -v ${PWD}/backend/${BACK_NAME}:/app -w /app
+DOCKER_BACK_CONFIG = -v ${PWD}/backend/:/app -w /app
+# DOCKER_BACK_CONFIG = -v ${PWD}/backend/${BACK_NAME}:/app -w /app
+DOCKER_IMG_BACK = node:current-alpine3.16
 
+run_back:
+	$(DOCKER_CMD) -p ${PORT_BACK}:9000 ${DOCKER_BACK_CONFIG} --entrypoint=npm ${DOCKER_IMG_BACK} run dev
+
+terminal_back:
+	$(DOCKER_CMD) -p ${PORT_BACK}:9000 ${DOCKER_BACK_CONFIG} --entrypoint=/bin/sh ${DOCKER_IMG_BACK}
+	@# $(DOCKER_CMD) ${DOCKER_BACK_CONFIG} --entrypoint=/bin/sh ${DOCKER_IMG_BACK}
 
 # ---------------------------------------------------------------------
