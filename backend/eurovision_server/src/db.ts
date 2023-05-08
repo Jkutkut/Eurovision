@@ -25,18 +25,31 @@ class EurovisionDB {
         });
     }
 
-    public setData(key: string, value: any) {
+    public setData(
+        key: string,
+        value: any,
+        callback: () => void = () => console.log('Data saved successfully'),
+        error: (err: string) => void = (err: string) => console.error(err)
+    ) {
         const data = JSON.stringify(value);
         fs.writeFile(this.filename(key), data, (err: any) => {
-            if (err) throw err;
-            console.log('File created successfully.');
+            if (err)
+                error(err);
+            else
+                callback();
         });
     }
 
-    public deleteData(key: string) {
+    public deleteData(
+        key: string,
+        callback: () => void = () => console.log('Data deleted successfully'),
+        error: (err: string) => void = (err: string) => console.error(err)
+    ) {
         fs.unlink(this.filename(key), (err: any) => {
-            if (err) throw err;
-            console.log('File deleted successfully.');
+            if (err)
+                error(err);
+            else
+                callback();
         });
     }
 }
