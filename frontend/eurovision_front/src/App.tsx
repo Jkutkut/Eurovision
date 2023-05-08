@@ -2,10 +2,8 @@
 import Login from './pages/Login';
 import MainPage from './pages/MainPage';
 
-function App() {
-
+const App = () => {
   let login = localStorage.getItem('login');
-  
   if (login == null) {
     return (
       <Login />

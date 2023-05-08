@@ -2,7 +2,7 @@ interface Props {
   user: string;
 }
 
-function MainPage({ user }: Props) {
+const MainPage = ({ user }: Props) => {
   const logout = () => {
     localStorage.removeItem('login');
     window.location.reload();
