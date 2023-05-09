@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   user: string;
@@ -6,9 +6,11 @@ interface Props {
 
 const MainPage = ({ user }: Props) => {
 
-  const [euroData, setEuroData] = useState([]);
+  const [ isLoading, setIsLoading ] = useState(true);
+  const [ data, setData ] = useState([]);
+  const [ myData, setMyData ] = useState([]);
 
-  if (euroData.length === 0) {
+  useEffect(() => {
     fetch('http://localhost:9000/eurovision.json', {
       method: 'GET',
       headers: {
@@ -16,51 +18,67 @@ const MainPage = ({ user }: Props) => {
       }
     }).then(response => response.json())
       .then(data => {
-        console.log(data);
-        setEuroData(data.countries);
+        console.log("Data from server");
+        setData(data.countries);
+        let dataStr = localStorage.getItem('myData');
+        let dataArr = [];
+        if (dataStr) {
+          dataArr = JSON.parse(dataStr);
+        }
+
+        if (dataArr.length === 0) {
+          for (let i = 0; i < data.countries.length; i++) {
+            dataArr.push({
+              country: data.countries[i]['country'],
+              points: 0
+            });
+          }
+          localStorage.setItem('myData', JSON.stringify(dataArr));
+        }
+        setMyData(dataArr);
+        setIsLoading(false);
       });
+  }, []);
+
+  if (isLoading) {
+    return <pre>Loading...</pre>;
   }
 
-  const logout = () => {
-    localStorage.removeItem('login');
-    window.location.reload();
-  };
+  console.log(data);
+  console.log(myData);
 
-  let songs;
-  if (euroData.length > 0) {
-    songs = (<>
-      <h2>GROUPS</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Country</th>
-            <th>Artist</th>
-            <th>Song</th>
+  return (<>
+    <p>Welcome {user}!</p>
+    <button onClick={logout}>Logout</button>
+    <h2>GROUPS</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Country</th>
+          <th>Artist</th>
+          <th>Song</th>
+          <th>Link</th>
+          <th>Points</th>
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item: any, index: number) => (
+          <tr key={item.country}>
+            <td>{item.country}</td>
+            <td>{item.artist}</td>
+            <td>{item.song}</td>
+            <td><a href={item.link} target="_blank">Link</a></td>
+            <td>{myData[index]['points']}</td>
           </tr>
-        </thead>
-        <tbody>
-          {euroData.map((item: any) => (
-            <tr key={item.country}>
-              <td>{item.country}</td>
-              <td>{item.artist}</td>
-              <td>{item.song}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>);
-  }
-  else {
-    songs = <pre>Loading...</pre>
-  }
-
-  return (
-    <div>
-      <p>Welcome, {user}!</p>
-      <button onClick={logout}>Logout</button>
-      {songs}
-    </div>
-  );
+        ))}
+      </tbody>
+    </table>
+  </>);
 }
+
+const logout = () => {
+  localStorage.removeItem('login');
+  window.location.reload();
+};
 
 export default MainPage;
