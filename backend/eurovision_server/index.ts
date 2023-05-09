@@ -2,12 +2,17 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import EurovisionDB from './src/db';
 
+const cors = require('cors');
 const path = require('path');
 dotenv.config();
 
 const app: Express = express();
 const port = process.env.PORT;
 
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'DELETE']
+}));
 app.use(express.static('public'));
 
 app.get('/', (req: Request, res: Response) => {
@@ -20,7 +25,7 @@ app.listen(port, () => {
 
 const db = new EurovisionDB();
 
-app.get('/api/:key', (req: Request, res: Response) => {
+app.get('/api/:key', cors(), (req: Request, res: Response) => {
   db.getData(req.params.key, (data: any) => {
     res.send(data);
   }, (err: string) => {
@@ -28,13 +33,13 @@ app.get('/api/:key', (req: Request, res: Response) => {
   });
 });
 
-app.post('/api/:key', (req: Request, res: Response) => {
+app.post('/api/:key', cors(), (req: Request, res: Response) => {
   db.setData(req.params.key, req.body, () => {
     res.send('Data saved successfully');
   });
 });
 
-app.delete('/api/:key', (req: Request, res: Response) => {
+app.delete('/api/:key', cors(), (req: Request, res: Response) => {
   db.deleteData(req.params.key, () => {
     res.send('Data deleted successfully');
   });
