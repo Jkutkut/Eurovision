@@ -51,28 +51,17 @@ const MainPage = ({ user }: Props) => {
     <p>Welcome {user}!</p>
     <button onClick={logout}>Logout</button>
     <h2>GROUPS</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Country</th>
-          <th>Artist</th>
-          <th>Song</th>
-          <th>Link</th>
-          <th>Points</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item: any, index: number) => (
-          <tr key={item.country}>
-            <td>{item.country}</td>
-            <td>{item.artist}</td>
-            <td>{item.song}</td>
-            <td><a href={item.link} target="_blank">Link</a></td>
-            <td>{myData[index]['points']}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="container text-center">
+      {data.map((item: any, index: number) => (
+        <div className="row align-items-start" key={item.country}>
+          <div className="col">{item.country}</div>
+          <div className="col">{item.artist}</div>
+          <div className="col">{item.song}</div>
+          <div className="col"><a href={item.link} target="_blank">Link</a></div>
+          <div className="col">{myData[index]['points']}</div>
+        </div>
+      ))}
+    </div>
   </>);
 }
 
