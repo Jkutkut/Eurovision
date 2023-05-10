@@ -62,6 +62,38 @@ const MainPage = ({ user }: Props) => {
     setEditorSong(song);
   };
 
+  const saveSongData = (newSongData: any) => {
+    console.log("Update song data", newSongData);
+    let i: number;
+    for (i = 0; i < myData.length; i++) {
+      if (myData[i]['country'] == newSongData['country']) {
+        break;
+      }
+    }
+    if (i == myData.length)
+      throw new Error("UPS, i can't find the country");
+    // myData[i] = newSongData;
+    // localStorage.setItem('myData', JSON.stringify(myData));
+    // const myNewData = myData.map((item: any) => ({...item}));
+    // myNewData[i] = newSongData;
+    // let myNewData = myData.map((item: any, index: number) => {
+    //   if (index == i)
+    //     return newSongData;
+    //   else
+    //     return item;
+    // });
+    // let myNewData = [];
+    // for (let j = 0; j < myData.length; j++) {
+    //   if (j == i)
+    //     myNewData.push(newSongData);
+    //   else
+    //     myNewData.push(myData[j]);
+    // }
+    // setMyData(myNewData); // TODO
+    console.log("Song data updated", i);
+    setEditorSong(-1);
+  };
+
   return (<>
     <p>Welcome {user}!</p>
     <button onClick={logout}>Logout</button>
@@ -70,7 +102,7 @@ const MainPage = ({ user }: Props) => {
         song={data[editorSong]}
         songData={myData[editorSong]}
         cancelCallback={() => setEditorSong(-1)}
-        saveCallback={(newSongData: any) => setEditorSong(-1)}
+        saveCallback={saveSongData}
       />
     }
     <h2>GROUPS</h2>

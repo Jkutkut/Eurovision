@@ -8,7 +8,12 @@ interface Props {
   cancelCallback: () => void;
 }
 
-const EditSong = ({song, songData, cancelCallback}: Props) => {
+const EditSong = ({song, songData, saveCallback, cancelCallback}: Props) => {
+  const save = () => {
+    let newSongData = songData;
+    // TODO
+    saveCallback(newSongData);
+  };
   return (
     <Modal
       show={true}
@@ -19,14 +24,15 @@ const EditSong = ({song, songData, cancelCallback}: Props) => {
         <Modal.Title>{song.country}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        I will not close if you click outside me. Don't even try to press
-        escape key.
+        <p>TODO</p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={cancelCallback}>
           Cancel
         </Button>
-        <Button variant="primary">Understood</Button>
+        <Button variant="primary" onClick={save}>
+          Save
+        </Button>
       </Modal.Footer>
     </Modal>
   );
