@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import Song from "../components/Song";
-import ClickAwayListener from "react-click-away-listener";
+import ViewSong from "../components/ViewSong";
 import EditSong from "../components/EditSong";
+
+import Song from "../models/Song";
+import SongData from "../models/SongData";
 
 interface Props {
   user: string;
@@ -10,8 +12,8 @@ interface Props {
 const MainPage = ({ user }: Props) => {
 
   const [ isLoading, setIsLoading ] = useState(true);
-  const [ data, setData ] = useState([]);
-  const [ myData, setMyData ] = useState([]);
+  const [ data, setData ] = useState<Song[]>([]);
+  const [ myData, setMyData ] = useState<SongData[]>([]);
   const [ editorSong, setEditorSong ] = useState(-1);
 
   useEffect(() => {
@@ -23,7 +25,9 @@ const MainPage = ({ user }: Props) => {
     }).then(response => response.json())
       .then(data => {
         console.log("Data from server");
-        setData(data.countries);
+        // let countries: Song[] = data.countries.map((item: any) => Song.fromJSON(item)); // TODO use this
+        let countries: Song[] = data.countries.map((item: any) => new Song(item.country, item.artist, item.song, item.link));
+        setData(countries);
         let dataStr = localStorage.getItem('myData');
         let dataArr = [];
         if (dataStr) {
@@ -39,7 +43,9 @@ const MainPage = ({ user }: Props) => {
           }
           localStorage.setItem('myData', JSON.stringify(dataArr));
         }
-        setMyData(dataArr);
+
+        let myData: SongData[] = dataArr.map((item: any) => new SongData(item.country, item.points));
+        setMyData(myData);
         setIsLoading(false);
       });
   }, []);
@@ -47,6 +53,8 @@ const MainPage = ({ user }: Props) => {
   if (isLoading) {
     return <pre>Loading...</pre>;
   }
+
+  console.log("Data", data);
 
   const editSong = (country: string) => {
     console.log("Edit song: " + country);
@@ -108,7 +116,7 @@ const MainPage = ({ user }: Props) => {
     <h2>GROUPS</h2>
     <div key="song-list" className="container text-center">
       {data.map((item: any, index: number) => (
-        <Song
+        <ViewSong
           key={item.country}
           country={item.country}
           artist={item.artist}

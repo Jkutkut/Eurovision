@@ -11,7 +11,7 @@ interface Props {
   editCallback: (country: string) => void;
 }
 
-const Song = ({ country, artist, song, link, points, editCallback }: Props) => {
+const ViewSong = ({ country, artist, song, link, points, editCallback }: Props) => {
   return (
     <div className="row align-items-start">
       <div className="col">{country}</div>
@@ -26,4 +26,4 @@ const Song = ({ country, artist, song, link, points, editCallback }: Props) => {
   );
 }
 
-export default Song;
+export default ViewSong;
