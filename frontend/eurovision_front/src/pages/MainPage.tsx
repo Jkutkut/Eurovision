@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Song from "../components/Song";
 
 interface Props {
   user: string;
@@ -53,13 +54,13 @@ const MainPage = ({ user }: Props) => {
     <h2>GROUPS</h2>
     <div className="container text-center">
       {data.map((item: any, index: number) => (
-        <div className="row align-items-start" key={item.country}>
-          <div className="col">{item.country}</div>
-          <div className="col">{item.artist}</div>
-          <div className="col">{item.song}</div>
-          <div className="col"><a href={item.link} target="_blank">Link</a></div>
-          <div className="col">{myData[index]['points']}</div>
-        </div>
+        <Song
+          country={item.country}
+          artist={item.artist}
+          song={item.song}
+          link={item.link}
+          points={myData[index]['points']}
+        />
       ))}
     </div>
   </>);
