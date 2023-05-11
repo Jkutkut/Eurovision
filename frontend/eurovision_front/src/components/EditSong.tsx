@@ -1,14 +1,14 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import SongData from '../models/SongData';
 
 interface Props {
-  song: any;
-  songData: any;
-  saveCallback: (newSongData: any) => void;
+  songData: SongData;
+  saveCallback: (newSongData: SongData) => void;
   cancelCallback: () => void;
 }
 
-const EditSong = ({song, songData, saveCallback, cancelCallback}: Props) => {
+const EditSong = ({songData, saveCallback, cancelCallback}: Props) => {
   const save = () => {
     let newSongData = songData;
     // TODO
@@ -21,7 +21,7 @@ const EditSong = ({song, songData, saveCallback, cancelCallback}: Props) => {
       keyboard={true}
     >
       <Modal.Header closeButton>
-        <Modal.Title>{song.country}</Modal.Title>
+        <Modal.Title>{songData.song.country}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <p>TODO</p>

@@ -1,26 +1,23 @@
+import Song from "./Song";
+
 class SongData {
-  country: string;
-  points: number;
-  nickname: string | null;
-  notes: string | null;
+  static NO_POINTS = -1;
+
+  public song: Song;
+  public points: number;
+  public nickname: string;
+  public notes: string;
   
   constructor(
-    country: string,
-    points: number,
-    nickname: string | null = null,
-    notes: string | null = null
-    ) {
-      this.country = country;
-      this.points = points;
-      this.nickname = nickname;
-      this.notes = notes;
-    }
-
-  static fromJSON(json: any): SongData {
-    return new SongData(
-      json.country,
-      json.points
-    );
+    song: Song,
+    points?: number,
+    nickname?: string,
+    notes?: string
+  ) {
+    this.song = song;
+    this.points = points || SongData.NO_POINTS;
+    this.nickname = nickname || "";
+    this.notes = notes || "";
   }
 }
 

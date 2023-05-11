@@ -1,8 +1,8 @@
 class Song {
-  country: string;
-  artist: string;
-  song: string;
-  link: string;
+  public country: string;
+  public artist: string;
+  public song: string;
+  public link: string;
   
   constructor(country: string, artist: string, song: string, link: string) {
     this.country = country;

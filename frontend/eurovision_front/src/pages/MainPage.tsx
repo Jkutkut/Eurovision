@@ -11,8 +11,8 @@ interface Props {
 
 const MainPage = ({ user }: Props) => {
 
-  const [ isLoading, setIsLoading ] = useState(true);
-  const [ data, setData ] = useState<Song[]>([]);
+  // const [ isLoading, setIsLoading ] = useState(true);
+  // const [ data, setData ] = useState<Song[]>([]);
   const [ myData, setMyData ] = useState<SongData[]>([]);
   const [ editorSong, setEditorSong ] = useState(-1);
 
@@ -27,40 +27,43 @@ const MainPage = ({ user }: Props) => {
         console.log("Data from server");
         // let countries: Song[] = data.countries.map((item: any) => Song.fromJSON(item)); // TODO use this
         let countries: Song[] = data.countries.map((item: any) => new Song(item.country, item.artist, item.song, item.link));
-        setData(countries);
-        let dataStr = localStorage.getItem('myData');
-        let dataArr = [];
-        if (dataStr) {
-          dataArr = JSON.parse(dataStr);
-        }
 
-        if (dataArr.length === 0) {
-          for (let i = 0; i < data.countries.length; i++) {
-            dataArr.push({
-              country: data.countries[i]['country'],
-              points: 0
-            });
-          }
-          localStorage.setItem('myData', JSON.stringify(dataArr));
-        }
+        // let dataStr = localStorage.getItem('myData');
+        // let dataArr = [];
+        // if (dataStr) {
+        //   dataArr = JSON.parse(dataStr);
+        // }
+        // if (dataArr.length === 0) {
+        //   for (let i = 0; i < data.countries.length; i++) {
+        //     dataArr.push({
+        //       country: data.countries[i]['country'],
+        //       points: 0
+        //     });
+        //   }
+        //   localStorage.setItem('myData', JSON.stringify(dataArr));
+        // }
+        // TODO persistency
 
-        let myData: SongData[] = dataArr.map((item: any) => new SongData(item.country, item.points));
+        console.log(countries);
+        let myData: SongData[] = countries.map((item: Song) => new SongData(item));
+        console.log(myData);
         setMyData(myData);
-        setIsLoading(false);
+        // setIsLoading(false);
       });
   }, []);
 
+  const isLoading = myData.length == 0;
   if (isLoading) {
     return <pre>Loading...</pre>;
   }
 
-  console.log("Data", data);
+  console.log("myData", myData);
 
   const editSong = (country: string) => {
     console.log("Edit song: " + country);
     let song: number = -1;
-    for (let i = 0; i < data.length; i++) {
-      if (country == data[i]['country']) {
+    for (let i = 0; i < myData.length; i++) {
+      if (country == myData[i].song.country) {
         song = i;
         break;
       }
@@ -70,16 +73,17 @@ const MainPage = ({ user }: Props) => {
     setEditorSong(song);
   };
 
-  const saveSongData = (newSongData: any) => {
+  const saveSongData = (newSongData: SongData) => {
     console.log("Update song data", newSongData);
     let i: number;
+
     for (i = 0; i < myData.length; i++) {
-      if (myData[i]['country'] == newSongData['country']) {
+      if (myData[i].song.country == newSongData.song.country) {
         break;
       }
     }
-    if (i == myData.length)
-      throw new Error("UPS, i can't find the country");
+    // if (i == myData.length)
+    //   throw new Error("UPS, i can't find the country");
     // myData[i] = newSongData;
     // localStorage.setItem('myData', JSON.stringify(myData));
     // const myNewData = myData.map((item: any) => ({...item}));
@@ -107,7 +111,6 @@ const MainPage = ({ user }: Props) => {
     <button onClick={logout}>Logout</button>
     {editorSong != -1 &&
       <EditSong
-        song={data[editorSong]}
         songData={myData[editorSong]}
         cancelCallback={() => setEditorSong(-1)}
         saveCallback={saveSongData}
@@ -115,14 +118,14 @@ const MainPage = ({ user }: Props) => {
     }
     <h2>GROUPS</h2>
     <div key="song-list" className="container text-center">
-      {data.map((item: any, index: number) => (
+      {myData.map((item: SongData) => (
         <ViewSong
-          key={item.country}
-          country={item.country}
-          artist={item.artist}
-          song={item.song}
-          link={item.link}
-          points={myData[index]['points']}
+          key={item.song.country}
+          country={item.song.country}
+          artist={item.song.artist}
+          song={item.song.song}
+          link={item.song.link}
+          points={item.points}
           editCallback={editSong}
         />
       ))}
