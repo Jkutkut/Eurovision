@@ -10,9 +10,6 @@ interface Props {
 }
 
 const MainPage = ({ user }: Props) => {
-
-  // const [ isLoading, setIsLoading ] = useState(true);
-  // const [ data, setData ] = useState<Song[]>([]);
   const [ myData, setMyData ] = useState<SongData[]>([]);
   const [ editorSong, setEditorSong ] = useState(-1);
 
@@ -116,16 +113,11 @@ const MainPage = ({ user }: Props) => {
         saveCallback={saveSongData}
       />
     }
-    <h2>GROUPS</h2>
     <div key="song-list" className="container text-center">
       {myData.map((item: SongData) => (
         <ViewSong
           key={item.song.country}
-          country={item.song.country}
-          artist={item.song.artist}
-          song={item.song.song}
-          link={item.song.link}
-          points={item.points}
+          songData={item}
           editCallback={editSong}
         />
       ))}
