@@ -79,9 +79,9 @@ const MainPage = ({ user }: Props) => {
         break;
       }
     }
-    // if (i == myData.length)
-    //   throw new Error("UPS, i can't find the country");
-    // myData[i] = newSongData;
+    if (i == myData.length)
+      throw new Error("UPS, i can't find the country");
+    myData[i] = newSongData;
     // localStorage.setItem('myData', JSON.stringify(myData));
     // const myNewData = myData.map((item: any) => ({...item}));
     // myNewData[i] = newSongData;
@@ -98,7 +98,7 @@ const MainPage = ({ user }: Props) => {
     //   else
     //     myNewData.push(myData[j]);
     // }
-    // setMyData(myNewData); // TODO
+    setMyData(myData);
     console.log("Song data updated", i);
     setEditorSong(-1);
   };
