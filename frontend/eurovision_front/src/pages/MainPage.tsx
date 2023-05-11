@@ -22,9 +22,13 @@ const MainPage = ({ user }: Props) => {
     }).then(response => response.json())
       .then(data => {
         console.log("Data from server");
-        // let countries: Song[] = data.countries.map((item: any) => Song.fromJSON(item)); // TODO use this
-        let countries: Song[] = data.countries.map((item: any) => new Song(item.country, item.artist, item.song, item.link));
+        let countries: Song[] = data.countries.map((item: any) => Song.fromJSON(item));
 
+        // let storedUser = localStorage.getItem('user');
+        // if (storedUser != null && storedUser != user) {
+        //   console.log("User changed, reset data");
+        //   localStorage.removeItem('myData');
+        // }
         // let dataStr = localStorage.getItem('myData');
         // let dataArr = [];
         // if (dataStr) {
@@ -41,11 +45,8 @@ const MainPage = ({ user }: Props) => {
         // }
         // TODO persistency
 
-        console.log(countries);
         let myData: SongData[] = countries.map((item: Song) => new SongData(item));
-        console.log(myData);
         setMyData(myData);
-        // setIsLoading(false);
       });
   }, []);
 
@@ -53,8 +54,6 @@ const MainPage = ({ user }: Props) => {
   if (isLoading) {
     return <pre>Loading...</pre>;
   }
-
-  console.log("myData", myData);
 
   const editSong = (country: string) => {
     console.log("Edit song: " + country);
@@ -82,22 +81,21 @@ const MainPage = ({ user }: Props) => {
     if (i == myData.length)
       throw new Error("UPS, i can't find the country");
     myData[i] = newSongData;
-    // localStorage.setItem('myData', JSON.stringify(myData));
-    // const myNewData = myData.map((item: any) => ({...item}));
-    // myNewData[i] = newSongData;
-    // let myNewData = myData.map((item: any, index: number) => {
-    //   if (index == i)
-    //     return newSongData;
-    //   else
-    //     return item;
-    // });
-    // let myNewData = [];
-    // for (let j = 0; j < myData.length; j++) {
-    //   if (j == i)
-    //     myNewData.push(newSongData);
-    //   else
-    //     myNewData.push(myData[j]);
-    // }
+    let data: string = JSON.stringify(myData);
+    fetch(`http://localhost:9000/api/${user}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data
+    })
+      // .then(response => response.json())
+      // .then(data => {
+      //   console.log("Data from server");
+      //   let countries: Song[] = data.countries.map((item: any) => Song.fromJSON(item));
+      //   let myData: SongData[] = countries.map((item: Song) => new SongData(item));
+      //   setMyData(myData);
+      // });
     setMyData(myData);
     console.log("Song data updated", i);
     setEditorSong(-1);

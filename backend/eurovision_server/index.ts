@@ -14,6 +14,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'DELETE']
 }));
 app.use(express.static('public'));
+app.use(express.json());
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Eurovision Server running');
