@@ -14,7 +14,8 @@ const MainPage = ({ user }: Props) => {
   const [ editorSong, setEditorSong ] = useState(-1);
 
   useEffect(() => {
-    fetch('http://localhost:9000/eurovision.json', {
+    let url = window.location.href.replace(/:\d+/, ':9000');
+    fetch(`${url}eurovision.json`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
