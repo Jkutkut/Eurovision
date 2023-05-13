@@ -30,7 +30,7 @@ app.get('/api/:key', cors(), (req: Request, res: Response) => {
   db.getData(req.params.key, (data: any) => {
     res.send(data);
   }, (err: string) => {
-    res.send(err);
+    res.send(db.getDefault());
   });
 });
 

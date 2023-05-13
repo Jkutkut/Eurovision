@@ -15,38 +15,29 @@ const MainPage = ({ user }: Props) => {
 
   useEffect(() => {
     let url = window.location.href.replace(/:\d+/, ':9000');
-    fetch(`${url}eurovision.json`, {
+    // fetch(`${url}eurovision.json`, {
+    fetch(`${url}api/${user}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       }
     }).then(response => response.json())
       .then(data => {
-        console.log("Data from server");
-        let countries: Song[] = data.countries.map((item: any) => Song.fromJSON(item));
-
-        // let storedUser = localStorage.getItem('user');
-        // if (storedUser != null && storedUser != user) {
-        //   console.log("User changed, reset data");
-        //   localStorage.removeItem('myData');
-        // }
-        // let dataStr = localStorage.getItem('myData');
-        // let dataArr = [];
-        // if (dataStr) {
-        //   dataArr = JSON.parse(dataStr);
-        // }
-        // if (dataArr.length === 0) {
-        //   for (let i = 0; i < data.countries.length; i++) {
-        //     dataArr.push({
-        //       country: data.countries[i]['country'],
-        //       points: 0
-        //     });
-        //   }
-        //   localStorage.setItem('myData', JSON.stringify(dataArr));
-        // }
-        // TODO persistency
-
-        let myData: SongData[] = countries.map((item: Song) => new SongData(item));
+        console.log("Data from server", data);
+        let myData: SongData[] = [];
+        for (let i = 0; i < data.length; i++) {
+          myData.push(new SongData(
+            new Song(
+              data[i].song.country,
+              data[i].song.artist,
+              data[i].song.song,
+              data[i].song.link
+            ),
+            data[i].points,
+            data[i].nickname,
+            data[i].notes
+          ));
+        }
         setMyData(myData);
       });
   }, []);
