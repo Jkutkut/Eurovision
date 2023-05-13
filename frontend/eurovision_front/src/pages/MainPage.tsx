@@ -102,12 +102,15 @@ const MainPage = ({ user }: Props) => {
     setEditorSong(-1);
   };
 
+  const ptsAvailable = pointsAvailable(myData);
+
   return (<>
     <p>Welcome {user}!</p>
     <button onClick={logout}>Logout</button>
     {editorSong != -1 &&
       <EditSong
         songData={myData[editorSong]}
+        pointsAvailable={pointsAvailableSong(ptsAvailable, myData[editorSong])}
         cancelCallback={() => setEditorSong(-1)}
         saveCallback={saveSongData}
       />
@@ -130,3 +133,21 @@ const logout = () => {
 };
 
 export default MainPage;
+
+// TOOLS
+
+function pointsAvailable(songs: SongData[]): number[] {
+  let ptsAvailable: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12];
+  for (let i = 0; i < songs.length; i++) {
+    if (songs[i].points != SongData.NO_POINTS) {
+      ptsAvailable = ptsAvailable.filter((item: number) => item != songs[i].points);
+    }
+  }
+  return ptsAvailable;
+}
+
+function pointsAvailableSong(ptsAvailable: number[], song: SongData): number[] {
+  if (song.points != SongData.NO_POINTS)
+    return [...ptsAvailable, song.points];
+  return ptsAvailable;
+}

@@ -5,11 +5,12 @@ import { useState } from 'react';
 
 interface Props {
   songData: SongData;
+  pointsAvailable: number[];
   saveCallback: (newSongData: SongData) => void;
   cancelCallback: () => void;
 }
 
-const EditSong = ({songData, saveCallback, cancelCallback}: Props) => {
+const EditSong = ({songData, pointsAvailable, saveCallback, cancelCallback}: Props) => {
   const [ nick, setNick ] = useState(songData.nickname);
   const [ points, setPoints ] = useState(songData.points);
   const [ notes, setNotes ] = useState(songData.notes);
@@ -56,18 +57,12 @@ const EditSong = ({songData, saveCallback, cancelCallback}: Props) => {
         
         <div className="form-group">
           <label htmlFor="points">Points</label>
-          <select className="form-control" id="points">
+          <select className="form-control" id="points" onChange={(e) => setPoints(parseInt(e.target.value))}>
             <option value={SongData.NO_POINTS}>No points</option>
-            <option value={12}>12</option>
-            <option value={10}>10</option>
-            <option value={8}>8</option>
-            <option value={7}>7</option>
-            <option value={6}>6</option>
-            <option value={5}>5</option>
-            <option value={4}>4</option>
-            <option value={3}>3</option>
-            <option value={2}>2</option>
-            <option value={1}>1</option>
+            <option value={0}>0</option>
+            {pointsAvailable.map((item: number) => (
+              <option value={item}>{item}</option>
+            ))}
           </select>
         </div>
         <div className="form-group">
