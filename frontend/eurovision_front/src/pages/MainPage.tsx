@@ -10,13 +10,12 @@ interface Props {
 }
 
 const MainPage = ({ user }: Props) => {
+  const MY_URL = window.location.href.replace(/:\d+/, ':9000');
   const [ myData, setMyData ] = useState<SongData[]>([]);
   const [ editorSong, setEditorSong ] = useState(-1);
 
   useEffect(() => {
-    let url = window.location.href.replace(/:\d+/, ':9000');
-    // fetch(`${url}eurovision.json`, {
-    fetch(`${url}api/${user}`, {
+    fetch(`${MY_URL}api/${user}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -74,13 +73,13 @@ const MainPage = ({ user }: Props) => {
       throw new Error("UPS, i can't find the country");
     myData[i] = newSongData;
     let data: string = JSON.stringify(myData);
-    fetch(`http://localhost:9000/api/${user}`, {
+    fetch(`${MY_URL}api/${user}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: data
-    })
+    });
       // .then(response => response.json())
       // .then(data => {
       //   console.log("Data from server");
