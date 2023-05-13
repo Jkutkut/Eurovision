@@ -88,8 +88,19 @@ const MainPage = ({ user }: Props) => {
   const ptsAvailable = pointsAvailable(myData);
 
   return (<>
-    <p>Welcome {user}!</p>
-    <button onClick={logout}>Logout</button>
+    <br/>
+    <div className="container text-center">
+      <div className="row align-items-end">
+        <div className="col">
+          <h5>Hello {user}!</h5>
+        </div>
+        <div className="col">
+          <button type="button" className="btn-close" aria-label="Close" onClick={logout}></button>
+        </div>
+      </div>
+    </div>
+
+    <br/>
     {editorSong != -1 &&
       <EditSong
         songData={myData[editorSong]}

@@ -25,11 +25,11 @@ const ViewSong = ({ songData, editCallback }: Props) => {
               }
             </button>
           </div>
-          {songData.points != SongData.NO_POINTS &&
-            <div className="col-2">
+          <div className="col-2">
+            {songData.points != SongData.NO_POINTS &&
               <button className="btn">{songData.points}</button>
-            </div>
-          }
+            }
+          </div>
           <div className="col-2">
             <button className="btn btn-primary" onClick={() => editCallback(songData.song.country)}>
               Edit
