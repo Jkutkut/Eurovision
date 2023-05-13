@@ -4,10 +4,34 @@
     ],
     "countries": [
         {
-            "country": "Germany",
-            "artist": "Lord Of The Lost",
-            "song": "Blood & Glitter",
-            "link": "https://www.youtube.com/watch?v=lnAliSmSI1A"
+            "country": "Austria",
+            "artist": "Teya & Salena",
+            "song": "Who The Hell Is Edgar?",
+            "link": "https://youtu.be/ZMmLeV47Au4"
+        },
+        {
+            "country": "Portugal",
+            "artist": "Mimicat",
+            "song": "Ai Coração",
+            "link": "https://youtu.be/wa3suiOzAAk"
+        },
+        {
+            "country": "Switzerland",
+            "artist": "Remo Forrer",
+            "song": "Watergun",
+            "link": "https://youtu.be/_8-Sbc_GZMc"
+        },
+        {
+            "country": "Poland",
+            "artist": "Blanka",
+            "song": "Solo",
+            "link": "https://youtu.be/Jjsl-JCHDWE"
+        },
+        {
+            "country": "Serbia",
+            "artist": "Luke Black",
+            "song": "Samo Mi Se Spava",
+            "link": "https://youtu.be/oeIVwYUge8o"
         },
         {
             "country": "France",
@@ -16,10 +40,10 @@
             "link": "https://www.youtube.com/watch?v=GWfbEFH9NvQ"
         },
         {
-            "country": "Italy",
-            "artist": "Marco Mengoni",
-            "song": "Due vite",
-            "link": "https://www.youtube.com/watch?v=Etn8d1x5Byk"
+            "country": "Cyprus",
+            "artist": "Andrew Lambrou",
+            "song": "Break A Broken Heart",
+            "link": "https://youtu.be/zrFUKqTy4zI"
         },
         {
             "country": "Spain",
@@ -28,136 +52,112 @@
             "link": "https://www.youtube.com/watch?v=yxuO0qZITko"
         },
         {
+            "country": "Sweden",
+            "artist": "Loreen",
+            "song": "Tattoo",
+            "link": "https://youtu.be/b3vJfR81xO0"
+        },
+        {
+            "country": "Albania",
+            "artist": "Albina & Familja Kelmendi",
+            "song": "Duje",
+            "link": "https://youtu.be/mp8OG4ApocI"
+        },
+        {
             "country": "United Kingdom",
             "artist": "Mae Muller",
             "song": "I Wrote A Song",
             "link": "https://www.youtube.com/watch?v=tJ21grjN6wU&ab_channel=EurovisionSongContest"
         },
         {
-            "country": "country 05",
-            "artist": "artist 05",
-            "song": "song 05",
-            "link": "https://www.youtube.com/"
+            "country": "Estonia",
+            "artist": "Alika",
+            "song": "Bridges",
+            "link": "https://youtu.be/wO9g5t3VSuw"
         },
         {
-            "country": "country 06",
-            "artist": "artist 06",
-            "song": "song 06",
-            "link": "https://www.youtube.com/"
+            "country": "Finland",
+            "artist": "Käärijä",
+            "song": "Cha Cha Cha",
+            "link": "https://youtu.be/znWi3zN8Ucg"
         },
         {
-            "country": "country 07",
-            "artist": "artist 07",
-            "song": "song 07",
-            "link": "https://www.youtube.com/"
+            "country": "Czechia",
+            "artist": "Vesna",
+            "song": "My Sister's Crown",
+            "link": "https://youtu.be/-y78qgDlzAM"
         },
         {
-            "country": "country 08",
-            "artist": "artist 08",
-            "song": "song 08",
-            "link": "https://www.youtube.com/"
+            "country": "Australia",
+            "artist": "Voyager",
+            "song": "Promise",
+            "link": "https://youtu.be/aqtu2GspT80"
         },
         {
-            "country": "country 09",
-            "artist": "artist 09",
-            "song": "song 09",
-            "link": "https://www.youtube.com/"
+            "country": "Belgium",
+            "artist": "Gustaph",
+            "song": "Because Of You",
+            "link": "https://youtu.be/ORhEoS6d8e4"
         },
         {
-            "country": "country 10",
-            "artist": "artist 10",
-            "song": "song 10",
-            "link": "https://www.youtube.com/"
+            "country": "Armenia",
+            "artist": "Brunette",
+            "song": "Future Lover",
+            "link": "https://youtu.be/Co8ZJIejXBA"
         },
         {
-            "country": "country 11",
-            "artist": "artist 11",
-            "song": "song 11",
-            "link": "https://www.youtube.com/"
+            "country": "Moldova",
+            "artist": "Pasha Parfeni",
+            "song": "Soarele şi Luna",
+            "link": "https://youtu.be/se9LDgFW6ak"
         },
         {
-            "country": "country 12",
-            "artist": "artist 12",
-            "song": "song 12",
-            "link": "https://www.youtube.com/"
+            "country": "Ukraine",
+            "artist": "TVORCHI",
+            "song": "Heart of Steel",
+            "link": "https://youtu.be/neIscK1hNxs"
         },
         {
-            "country": "country 13",
-            "artist": "artist 13",
-            "song": "song 13",
-            "link": "https://www.youtube.com/"
+            "country": "Norway",
+            "artist": "Alessandra",
+            "song": "Queen of Kings",
+            "link": "https://youtu.be/CxNiUxdJnTQ"
         },
         {
-            "country": "country 14",
-            "artist": "artist 14",
-            "song": "song 14",
-            "link": "https://www.youtube.com/"
+            "country": "Germany",
+            "artist": "Lord of the Lost",
+            "song": "Blood & Glitter",
+            "link": "https://youtu.be/Y12_YMs9kCQ"
         },
         {
-            "country": "country 15",
-            "artist": "artist 15",
-            "song": "song 15",
-            "link": "https://www.youtube.com/"
+            "country": "Lithuania",
+            "artist": "Monika Linkytė",
+            "song": "Stay",
+            "link": "https://youtu.be/68lbEUDuWUQ"
         },
         {
-            "country": "country 16",
-            "artist": "artist 16",
-            "song": "song 16",
-            "link": "https://www.youtube.com/"
+            "country": "Israel",
+            "artist": "Noa Kirel",
+            "song": "Unicorn",
+            "link": "https://youtu.be/r4wbdKmM3bQ"
         },
         {
-            "country": "country 17",
-            "artist": "artist 17",
-            "song": "song 17",
-            "link": "https://www.youtube.com/"
+            "country": "Slovenia",
+            "artist": "Joker Out",
+            "song": "Carpe Diem",
+            "link": "https://youtu.be/zDBSIGITdY4"
         },
         {
-            "country": "country 18",
-            "artist": "artist 18",
-            "song": "song 18",
-            "link": "https://www.youtube.com/"
+            "country": "Croatia",
+            "artist": "Let 3",
+            "song": "Mama ŠČ!",
+            "link": "https://youtu.be/AyKj8jA0Qoc"
         },
         {
-            "country": "country 19",
-            "artist": "artist 19",
-            "song": "song 19",
-            "link": "https://www.youtube.com/"
-        },
-        {
-            "country": "country 20",
-            "artist": "artist 20",
-            "song": "song 20",
-            "link": "https://www.youtube.com/"
-        },
-        {
-            "country": "country 21",
-            "artist": "artist 21",
-            "song": "song 21",
-            "link": "https://www.youtube.com/"
-        },
-        {
-            "country": "country 22",
-            "artist": "artist 22",
-            "song": "song 22",
-            "link": "https://www.youtube.com/"
-        },
-        {
-            "country": "country 23",
-            "artist": "artist 23",
-            "song": "song 23",
-            "link": "https://www.youtube.com/"
-        },
-        {
-            "country": "country 24",
-            "artist": "artist 24",
-            "song": "song 24",
-            "link": "https://www.youtube.com/"
-        },
-        {
-            "country": "country 25",
-            "artist": "artist 25",
-            "song": "song 25",
-            "link": "https://www.youtube.com/"
+            "country": "United Kingdom",
+            "artist": "Mae Muller",
+            "song": "I Wrote A Song",
+            "link": "https://youtu.be/tJ21grjN6wU"
         }
     ]
 }
