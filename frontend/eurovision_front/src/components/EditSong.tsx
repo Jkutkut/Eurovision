@@ -57,11 +57,11 @@ const EditSong = ({songData, pointsAvailable, saveCallback, cancelCallback}: Pro
         
         <div className="form-group">
           <label htmlFor="points">Points</label>
-          <select className="form-control" id="points" onChange={(e) => setPoints(parseInt(e.target.value))}>
+          <select className="form-control" id="points" onChange={(e) => setPoints(parseInt(e.target.value))} value={points}>
             <option value={SongData.NO_POINTS}>No points</option>
             <option value={0}>0</option>
             {pointsAvailable.map((item: number) => (
-              <option value={item}>{item}</option>
+              <option key={item} value={item}>{item}</option>
             ))}
           </select>
         </div>

@@ -80,13 +80,6 @@ const MainPage = ({ user }: Props) => {
       },
       body: data
     });
-      // .then(response => response.json())
-      // .then(data => {
-      //   console.log("Data from server");
-      //   let countries: Song[] = data.countries.map((item: any) => Song.fromJSON(item));
-      //   let myData: SongData[] = countries.map((item: Song) => new SongData(item));
-      //   setMyData(myData);
-      // });
     setMyData(myData);
     console.log("Song data updated", i);
     setEditorSong(-1);

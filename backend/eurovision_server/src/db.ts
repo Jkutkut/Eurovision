@@ -34,7 +34,6 @@ class EurovisionDB {
     }
 
     public getDefault() {
-        console.log(this.eurovisionData);
         let defaultData = [];
         for (let i = 0; i < this.eurovisionData.countries.length; i++) {
             defaultData.push({
