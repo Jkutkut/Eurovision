@@ -6,7 +6,7 @@ dir_path = "backend/eurovision_server/db/"
 data = []
 for filename in os.listdir(dir_path):
     file_path = os.path.join(dir_path, filename)
-    if os.path.isfile(file_path) and filename.endswith(".json"):        
+    if os.path.isfile(file_path) and filename.endswith(".json"):
         with open(file_path, 'r') as f:
             file_contents = f.read()
             json_data = json.loads(file_contents)
