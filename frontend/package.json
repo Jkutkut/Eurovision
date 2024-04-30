@@ -1,7 +1,7 @@
 {
   "name": "eurovision_front",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -13,6 +13,7 @@
   "dependencies": {
     "bootstrap": "^5.2.3",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0"
   },
