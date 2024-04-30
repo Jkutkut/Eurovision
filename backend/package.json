@@ -2,11 +2,11 @@
   "name": "eurovision_server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/index.js",
-    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js --ignore ./db/\""
+    "start": "node dist/index.ts",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.ts --ignore ./db/\""
   },
   "keywords": [],
   "author": "",
