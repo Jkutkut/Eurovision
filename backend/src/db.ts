@@ -9,7 +9,7 @@ class EurovisionDB {
         this.dir = dir;
         this.publicDir = publicDir;
         this.eurovisionData;
-        this.readFile(`${this.publicDir}/eurovision.json`, (data: any) => {
+        this.readFile(`${this.publicDir}/eurovision2024.json`, (data: any) => {
             this.eurovisionData = data;
             console.log('Eurovision data loaded successfully');
         }, (err: string) => console.error(err));

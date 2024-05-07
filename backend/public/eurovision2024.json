@@ -1,0 +1,224 @@
+{
+    "points": [ 12, 10, 8, 7, 6, 5, 4, 3, 2, 1 ],
+    "countries": [
+        {
+            "country": "🇦🇱 ALBANIA",
+            "artist": "BESA",
+            "song": "TITAN",
+            "link": "https://www.youtube.com/watch?v=nrjFhjpm7D8"
+        },
+        {
+            "country": "🇦🇲 ARMENIA",
+            "artist": "LADANIVA",
+            "song": "Jako",
+            "link": "https://www.youtube.com/watch?v=_6xfmW0Fc40"
+        },
+        {
+            "country": "🇦🇺 AUSTRALIA",
+            "artist": "Electric Fields",
+            "song": "One Milkali (One Blood)",
+            "link": "https://www.youtube.com/watch?v=tJ2IaHxCvdw"
+        },
+        {
+            "country": "🇦🇹 AUSTRIA",
+            "artist": "Kaleen",
+            "song": "We Will Rave",
+            "link": "https://www.youtube.com/watch?v=Kqda15G4T-4"
+        },
+        {"country": "🇦🇿 AZERBAIJAN",
+            "artist": "FAHREE feat. Ilkin Dovlatov",
+            "song": "Özünlə Apar",
+            "link": "https://www.youtube.com/watch?v=NNhAk4rVgNc"
+        },
+        {
+            "country": "🇧🇪 BELGIUM",
+            "artist": "Mustii",
+            "song": "Before The Party’s Over",
+            "link": "https://www.youtube.com/watch?v=WCe9zrWEFNc"
+        },
+        {
+            "country": "🇭🇷 CROATIA",
+            "artist": "Baby Lasagna",
+            "song": "Rim Tim Tagi Dim",
+            "link": "https://www.youtube.com/watch?v=xTBrVNZtnys"
+        },
+        {
+            "country": "🇨🇾 CYPRUS",
+            "artist": "Silia Kapsis",
+            "song": "Liar",
+            "link": "https://www.youtube.com/watch?v=8q5QozrtEPA"
+        },
+        {
+            "country": "🇨🇿 CZECHIA",
+            "artist": "Aiko",
+            "song": "Pedestal",
+            "link": "https://www.youtube.com/watch?v=oTjzpk_zdC0"
+        },
+        {
+            "country": "🇩🇰 DENMARK",
+            "artist": "SABA",
+            "song": "SAND",
+            "link": "https://www.youtube.com/watch?v=3pCtdFnv9eQ"
+        },
+        {"country": "🇪🇪 ESTONIA",
+            "artist": "5MIINUST x Puuluup",
+            "song": "(nendest) narkootikumidest ei tea me (küll) midagi",
+            "link": "https://www.youtube.com/watch?v=zY6RbPaTNUc"
+        },
+        {
+            "country": "🇫🇮 FINLAND",
+            "artist": "Windows95man",
+            "song": "No Rules!",
+            "link": "https://www.youtube.com/watch?v=8Wi7fhswoBA"
+        },
+        {
+            "country": "🇫🇷 FRANCE",
+            "artist": "Slimane",
+            "song": "Mon amour",
+            "link": "https://www.youtube.com/watch?v=tfoOop2HXxQ"
+        },
+        {
+            "country": "🇬🇪 GEORGIA",
+            "artist": "Nutsa Buzaladze",
+            "song": "Firefighter",
+            "link": "https://www.youtube.com/watch?v=blMwY8Jabyk"
+        },
+        {
+            "country": "🇩🇪 GERMANY",
+            "artist": "ISAAK",
+            "song": "Always On The Run",
+            "link": "https://www.youtube.com/watch?v=8b5gcgXcWgk"
+        },
+        {
+            "country": "🇬🇷 GREECE",
+            "artist": "Marina Satti",
+            "song": "ZARI",
+            "link": "https://www.youtube.com/watch?v=uTYalXf184A"
+        },
+        {
+            "country": "🇮🇸 ICELAND",
+            "artist": "Hera Björk",
+            "song": "Scared of Heights",
+            "link": "https://www.youtube.com/watch?v=OouUsCZ3xkM"
+        },
+        {
+            "country": "🇮🇪 IRELAND",
+            "artist": "Bambie Thug",
+            "song": "Doomsday Blue",
+            "link": "https://www.youtube.com/watch?v=ZGRXRrlIspY"
+        },
+        {
+            "country": "🇮🇱 ISRAEL",
+            "artist": "Eden Golan",
+            "song": "Hurricane",
+            "link": "https://www.youtube.com/watch?v=lJYn09tuPw4"
+        },
+        {
+            "country": "🇮🇹 ITALY",
+            "artist": "Angelina Mango",
+            "song": "La noia",
+            "link": "https://www.youtube.com/watch?v=TO85laH-ATY"
+        },
+        {
+            "country": "🇱🇻 LATVIA",
+            "artist": "Dons",
+            "song": "Hollow",
+            "link": "https://www.youtube.com/watch?v=p8FNO0DtBng"
+        },
+        {
+            "country": "🇱🇹 LITHUANIA",
+            "artist": "Silvester Belt",
+            "song": "Luktelk",
+            "link": "https://www.youtube.com/watch?v=OrL668EQRu0"
+        },
+        {
+            "country": "🇱🇺 LUXEMBOURG",
+            "artist": "TALI",
+            "song": "Fighter",
+            "link": "https://www.youtube.com/watch?v=HV3sORfrREE"
+        },
+        {
+            "country": "🇲🇹 MALTA",
+            "artist": "Sarah Bonnici",
+            "song": "Loop",
+            "link": "https://www.youtube.com/watch?v=l6eS60n4wg8"
+        },
+        {
+            "country": "🇲🇩 MOLDOVA",
+            "artist": "Natalia Barbu",
+            "song": "In The Middle",
+            "link": "https://www.youtube.com/watch?v=Jom9sNL5whs"
+        },
+        {
+            "country": "🇳🇱 NETHERLANDS",
+            "artist": "Joost Klein",
+            "song": "Europapa",
+            "link": "https://www.youtube.com/watch?v=gT2wY0DjYGo"
+        },
+        {
+            "country": "🇳🇴 NORWAY",
+            "artist": "Gåte",
+            "song": "Ulveham",
+            "link": "https://www.youtube.com/watch?v=UipzszlJwRQ"
+        },
+        {
+            "country": "🇵🇱 POLAND",
+            "artist": "LUNA",
+            "song": "The Tower",
+            "link": "https://www.youtube.com/watch?v=IhvDkF9XZx0"
+        },
+        {
+            "country": "🇵🇹 PORTUGAL",
+            "artist": "iolanda",
+            "song": "Grito",
+            "link": "https://www.youtube.com/watch?v=K5wDGhcDSpQ"
+        },
+        {
+            "country": "🇸🇲 SAN MARINO",
+            "artist": "MEGARA",
+            "song": "11:11",
+            "link": "https://www.youtube.com/watch?v=9NcAJtfhpWA"
+        },
+        {
+            "country": "🇷🇸 SERBIA",
+            "artist": "TEYA DORA",
+            "song": "RAMONDA",
+            "link": "https://www.youtube.com/watch?v=tJyBVRBiyKA"
+        },
+        {
+            "country": "🇸🇮 SLOVENIA",
+            "artist": "Raiven",
+            "song": "Veronika",
+            "link": "https://www.youtube.com/watch?v=uWcSsi7SliI"
+        },
+        {
+            "country": "🇪🇸 SPAIN",
+            "artist": "Nebulossa",
+            "song": "ZORRA",
+            "link": "https://www.youtube.com/watch?v=LJFpexlj9Bs"
+        },
+        {
+            "country": "🇸🇪 SWEDEN",
+            "artist": "Marcus &amp; Martinus",
+            "song": "Unforgettable",
+            "link": "https://www.youtube.com/watch?v=yekc8t0rJqA"
+        },
+        {
+            "country": "🇨🇭 SWITZERLAND",
+            "artist": "Nemo",
+            "song": "The Code",
+            "link": "https://www.youtube.com/watch?v=kiGDvM14Kwg"
+        },
+        {"country": "🇺🇦 UKRAINE",
+            "artist": "alyona alyona &amp; Jerry Heil",
+            "song": "Teresa &amp; Maria",
+            "link": "https://www.youtube.com/watch?v=k_8cNbF8FLI"
+        },
+        {
+            "country": "🇬🇧 UNITED KINGDOM",
+            "artist": "Olly Alexander",
+            "song": "Dizzy",
+            "link": "https://www.youtube.com/watch?v=mvs92WfR8lM"
+        }
+    ]
+}
