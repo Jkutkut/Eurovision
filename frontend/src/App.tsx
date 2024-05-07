@@ -15,7 +15,9 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
-const App = () => {
+import {SortableItem} from './components/dnd';
+
+const DndDemo = () => {
   const [activeId, setActiveId] = useState(null);
   const [items, setItems] = useState(['1', '2', '3']);
   const sensors = useSensors(
@@ -54,7 +56,9 @@ const App = () => {
         items={items}
         strategy={verticalListSortingStrategy}
       >
-        {items.map(id => <SortableItem key={id} id={id} />)}
+        {items.map(id => <SortableItem key={id} id={id}>
+          <Item id={id} />
+        </SortableItem>)}
       </SortableContext>
       <DragOverlay>
       {/*
@@ -65,50 +69,44 @@ const App = () => {
   );
 }
 
-export default App;
-
-import {useSortable} from '@dnd-kit/sortable';
-import {CSS} from '@dnd-kit/utilities';
-
-
-export function SortableItem(props) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({id: props.id});
-  
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition
-  };
-
-  const value = props.id
-  
-  return (
-    <Item ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      {value}
-    </Item>
-  );
-}
-
 import {forwardRef} from 'react';
 
-export const Item = forwardRef(({id, ...props}, ref) => {
-  const {style, ...rest} = props;
+interface ItemProps {
+  id?: string;
+  style: any;
+  children: React.ReactNode;
+}
+
+export const Item = forwardRef(({id, style, children, ...rest}: ItemProps, ref) => {
   const itemStyle = {
     touchAction: 'none',
     width: '100%',
     height: '100px',
     backgroundColor: '#f0f0f0',
     margin: '0 0 4px 0',
-    ...style,
   };
   return (
     <div {...rest} style={itemStyle} ref={ref}>
-      Element Original: {props.children} {id && `Dragged: ${id}`}
+      Element Original: {children} {id && `Dragged: ${id}`}
     </div>
   )
 });
+
+import Login from './pages/Login';
+import MainPage from './pages/MainPage';
+
+const App = () => {
+  let login = localStorage.getItem('login');
+  if (login == null) {
+    return (
+      <Login />
+    );
+  }
+
+  return <>
+    <MainPage user={login} />
+    <DndDemo />
+  </>;
+}
+
+export default App;

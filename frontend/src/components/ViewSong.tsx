@@ -9,63 +9,78 @@ interface Props {
 const ViewSong = ({ songData, editCallback }: Props) => {
   const [ expanded, setExpanded ] = useState(false);
 
-  const songId = songData.song.country + "ViewContent";
-  const controlId = songData.song.country + "ViewControl";
+  const {nickname, points, notes} = songData;
+  const { artist, song, country: fullCountry, link } = songData.song;
+  const [ countryFlag, ...country ] = fullCountry.split(" ");
 
-  return (
+  const toggleExpanded = () => setExpanded(!expanded);
+  const editSong = () => editCallback(songData.song.country);
+
+  const hasBeenEdited = nickname != "" || points != SongData.NO_POINTS || notes != "";
+
+  return <>
     <div className="card">
-      <div className="card-header" id={controlId}>
-        <div className="row">
-          <div className="col-8">
-            <button className="btn" onClick={() => setExpanded(!expanded)}>
-              { songData.nickname != "" ?
-                <>{songData.nickname} <del>{songData.song.country}</del></>
-                :
-                songData.song.country
-              }
-            </button>
+      <div className="card-body" onClick={toggleExpanded}>
+        <div className="row d-flex align-items-center">
+          <div className="col text-truncate">
+            {countryFlag} {nickname || `${country} - ${song}`}
           </div>
-          <div className="col-2">
-            {songData.points != SongData.NO_POINTS &&
-              <button className="btn">{songData.points}</button>
-            }
+          {points != SongData.NO_POINTS &&
+            <div className="col-3 text-end text-nowrap text-truncate">
+              {points} points
+            </div>
+          }
+          {!hasBeenEdited &&
+            <div className="col-2 text-end">
+              <button className="btn btn-primary btn-sm" onClick={editSong}>Edit</button>
+            </div>
+          }
+        </div>
+      </div>
+      <div className={`card-footer collapse ${expanded ? "show" : ""}`}>
+        <div className="card-body">
+          <div className="row">
+            <div className="col">
+              {countryFlag} {country}
+            </div>
+            <div className="col text-end">
+              🎵 <a href={link} target="_blank" rel="noreferrer">YouTube</a> 🎵
+            </div>
           </div>
-          <div className="col-2">
-            <button className="btn btn-primary" onClick={() => editCallback(songData.song.country)}>
+          <div className={nickname && "text-decoration-line-through" || "mt-3"}>
+            <div className="row">
+              <div className="col">
+                <i>{song}</i>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">
+                By: <i>{artist}</i>
+              </div>
+            </div>
+          </div>
+          {nickname && <div className="row">
+            <div className="col">
+              AKA: <i>{nickname}</i>
+            </div>
+          </div>}
+          {notes != "" &&
+            <div className="row mt-3">
+              <div className="col-12">
+                <div className="h6">Notes</div>
+                {notes.split("\n").map((line, i) => <div key={i}>{line}</div>)}
+              </div>
+            </div>
+          }
+          <div className="row mt-3">
+            <button className="btn btn-primary" onClick={editSong}>
               Edit
             </button>
           </div>
         </div>
       </div>
-      <div id={songId} className={`collapse ${expanded ? "show" : ""}`}>
-        <div className="card-body">
-          <div className="row">
-            <div className="col">
-              Artist: <i>{songData.song.artist}</i>
-            </div>
-            <div className="col">
-              Song: <i>{songData.song.song}</i>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col">
-              🎵<a href={songData.song.link}>YouTube</a>🎵
-            </div>
-          </div>
-          {songData.notes != "" &&
-            <>
-            <br/>
-            <div className="row">
-              <div className="col-12">
-                <h5 className="card-title">Notes</h5>
-                <p>{songData.notes}</p>
-              </div>
-            </div></>
-          }
-        </div>
-      </div>
     </div>
-  );
+  </>;
 }
 
 export default ViewSong;

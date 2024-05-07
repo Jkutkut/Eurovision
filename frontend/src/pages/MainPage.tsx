@@ -10,7 +10,7 @@ interface Props {
 }
 
 const MainPage = ({ user }: Props) => {
-  const MY_URL = window.location.href.replace(/:\d+/, ':9000');
+  const MY_URL = "http://localhost:9000/";
   const [ myData, setMyData ] = useState<SongData[]>([]);
   const [ editorSong, setEditorSong ] = useState(-1);
 
@@ -88,13 +88,12 @@ const MainPage = ({ user }: Props) => {
   const ptsAvailable = pointsAvailable(myData);
 
   return (<>
-    <br/>
-    <div className="container text-center">
+    <div className="container mt-3">
       <div className="row align-items-end">
         <div className="col">
-          <h5>Hello {user}!</h5>
+          <div className="h5 m-0">{user}</div>
         </div>
-        <div className="col">
+        <div className="col text-end">
           <button type="button" className="btn-close" aria-label="Close" onClick={logout}></button>
         </div>
       </div>
@@ -109,7 +108,7 @@ const MainPage = ({ user }: Props) => {
         saveCallback={saveSongData}
       />
     }
-    <div key="song-list" className="container text-center">
+    <div key="song-list" className="container d-flex flex-column gap-2">
       {myData.map((item: SongData) => (
         <ViewSong
           key={item.song.country}
