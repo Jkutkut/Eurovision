@@ -22,6 +22,7 @@ import EditSong from "../components/EditSong";
 
 import Song from "../models/Song";
 import SongData from "../models/SongData";
+import useRestAPI from "../hooks/useRestAPI";
 
 interface Props {
   user: string;
@@ -31,42 +32,9 @@ const MainPage = ({ user }: Props) => {
   // TODO hook rest service
   // TODO rework points
   // TODO refactor
-  const MY_URL = `http://${window.location.hostname}:9000/`;
-  const [ myData, setMyRealData ] = useState<SongData[]>([]);
+  const { myData, setMyData, isLoading } = useRestAPI({user});
   const [ editorSong, setEditorSong ] = useState(-1);
   const [dragged, setDragged] = useState(null);
-
-  const setMyData = (data: SongData[]) => {
-    uploadSongData(data);
-    setMyRealData(data);
-  }
-
-  useEffect(() => {
-    fetch(`${MY_URL}api/${user}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    }).then(response => response.json())
-      .then(data => {
-        console.debug("Data from server", data);
-        let myData: SongData[] = [];
-        for (let i = 0; i < data.length; i++) {
-          myData.push(new SongData(
-            new Song(
-              data[i].song.country,
-              data[i].song.artist,
-              data[i].song.song,
-              data[i].song.link
-            ),
-            data[i].points,
-            data[i].nickname,
-            data[i].notes
-          ));
-        }
-        setMyData(myData);
-      });
-  }, []);
 
   const editSong = (country: string) => {
     console.log("Edit song: " + country);
@@ -80,18 +48,6 @@ const MainPage = ({ user }: Props) => {
     if (song == -1)
       throw new Error("UPS, i can't find the country");
     setEditorSong(song);
-  };
-
-  const uploadSongData = (myData: SongData[]) => {
-    console.log("Upload song data");
-    let data: string = JSON.stringify(myData);
-    fetch(`${MY_URL}api/${user}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: data
-    });
   };
 
   const saveSongData = (newSongData: SongData) => {
@@ -111,8 +67,6 @@ const MainPage = ({ user }: Props) => {
     setEditorSong(-1);
   };
 
-  const ptsAvailable = pointsAvailable(myData);
-
   // TODO refactor
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -130,6 +84,7 @@ const MainPage = ({ user }: Props) => {
   
   const handleDragEnd = (event) => {
     // TODO refactor
+    // TODO handle adding to empty ranking
     console.log("Drag end", event);
     const {active, over} = event;
     console.log("Drag end", active.id, over.id);
@@ -177,11 +132,6 @@ const MainPage = ({ user }: Props) => {
     setDragged(null);
   }
 
-  const dragOver = (event) => {
-    console.log("Drag over", event);
-  };
-
-  const isLoading = myData.length == 0;
   if (isLoading) {
     return <pre>Loading...</pre>;
   }
@@ -214,7 +164,6 @@ const MainPage = ({ user }: Props) => {
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
-      onDragOver={dragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="container d-flex flex-column gap-2 pt-3 pb-3"
@@ -253,7 +202,10 @@ const MainPage = ({ user }: Props) => {
           ))}
         </SortableContext>
         <DragOverlay>
-          {dragged && <ViewSongRef songData={myData.find(item => item.id == dragged)} editCallback={editSong} />}
+          {dragged && <ViewSongRef
+            songData={myData.find(item => item.id == dragged)}
+            editCallback={editSong}
+          />}
         </DragOverlay>
       </div>
     </DndContext>
@@ -270,21 +222,3 @@ const logout = () => {
 };
 
 export default MainPage;
-
-// TOOLS
-
-function pointsAvailable(songs: SongData[]): number[] {
-  let ptsAvailable: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 10, 12];
-  for (let i = 0; i < songs.length; i++) {
-    if (songs[i].points != SongData.NO_POINTS) {
-      ptsAvailable = ptsAvailable.filter((item: number) => item != songs[i].points);
-    }
-  }
-  return ptsAvailable;
-}
-
-function pointsAvailableSong(ptsAvailable: number[], song: SongData): number[] {
-  if (song.points != SongData.NO_POINTS)
-    return [...ptsAvailable, song.points];
-  return ptsAvailable;
-}
