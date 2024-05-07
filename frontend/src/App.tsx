@@ -1,16 +1,17 @@
+import useLogin from './hooks/useLogin';
 import Login from './pages/Login';
 import MainPage from './pages/MainPage';
 
 const App = () => {
-  let login = localStorage.getItem('login');
-  if (login == null) {
+  let { user, login } = useLogin();
+  if (user == null) {
     return (
-      <Login />
+      <Login login={login} />
     );
   }
 
   return <>
-    <MainPage user={login} />
+    <MainPage user={user} />
   </>;
 }
 

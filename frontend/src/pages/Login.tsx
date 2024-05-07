@@ -1,11 +1,11 @@
 import { useState } from "react";
 
-const Login = () => {
+interface Props {
+  login: (name: string) => void
+}
+
+const Login = ({ login }: Props) => {
   const [name, setName] = useState('');
-  const login = () => {
-    localStorage.setItem('login', name);
-    window.location.reload();
-  }
   
   return (
     <>
@@ -17,7 +17,7 @@ const Login = () => {
             id="nickname" aria-describedby="nicknameHelp" onChange={(e) => setName(e.target.value)}/>
         </div>
         <br />
-        <button onClick={login} className="btn btn-dark w-100">Login</button>
+        <button onClick={() => login(name)} className="btn btn-dark w-100">Login</button>
       </div>
     </>
   );
