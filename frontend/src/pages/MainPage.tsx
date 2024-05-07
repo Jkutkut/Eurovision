@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useState } from "react";
 import {
   closestCenter,
   DndContext, 
@@ -15,12 +15,11 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 
-import {SortableItem} from '../components/dnd';
+import {SortableItem, Dropable} from '../components/dnd';
 
 import ViewSong from "../components/ViewSong";
 import EditSong from "../components/EditSong";
 
-import Song from "../models/Song";
 import SongData from "../models/SongData";
 import useRestAPI from "../hooks/useRestAPI";
 
@@ -84,11 +83,30 @@ const MainPage = ({ user }: Props) => {
   
   const handleDragEnd = (event) => {
     // TODO refactor
-    // TODO handle adding to empty ranking
     console.log("Drag end", event);
     const {active, over} = event;
     console.log("Drag end", active.id, over.id);
     if (active.id !== over.id) {
+      if (over.id == "ranking-drop") {
+        const newData = [...myData];
+        const newIndex = myData.findIndex(item => item.id == over.id);
+        newData[newIndex].points = 0; // Will be updated now
+        const points = [12, 10, 8, 6, 5, 4, 3, 2, 1];
+        let startingIndex = 0;
+        for (let i = 0; i < newIndex; i++) {
+          if (newData[i].points == SongData.NO_POINTS)
+            continue;
+          startingIndex++;
+        }
+        for (let i = newIndex, j = startingIndex; i < newData.length; i++) {
+          if (newData[i].points == SongData.NO_POINTS)
+            continue;
+          let point = j < points.length ? points[j++] : 0;
+          newData[i].points = point;
+        }
+        return;
+      }
+
       const oldIndex = myData.findIndex(item => item.id == active.id);
       const newIndex = myData.findIndex(item => item.id == over.id);
       if (oldIndex == -1 || newIndex == -1) {
@@ -166,26 +184,29 @@ const MainPage = ({ user }: Props) => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="container d-flex flex-column gap-2 pt-3 pb-3"
-        style={{
-          background: "yellow"
-        }}
-      >
-        <SortableContext
-          id="ranking"
-          items={ranking}
-          strategy={verticalListSortingStrategy}
-        >
-          {ranking.map((songData: SongData) => (
-            <SortableItem key={songData.id} id={songData.id}>
-              <ViewSongRef
-                songData={songData}
-                editCallback={editSong}
-              />
-            </SortableItem>
-          ))}
-        </SortableContext>
-      </div>
+      <Dropable id="ranking-drop">
+        <div className="container d-flex flex-column gap-2 p-0 m-3 bg-secondary">
+          {ranking.length == 0 &&
+            <div className="text-center">
+              Drag a song here to rank it
+            </div>
+          }
+          <SortableContext
+            id="ranking"
+            items={ranking}
+            strategy={verticalListSortingStrategy}
+          >
+            {ranking.map((songData: SongData) => (
+              <SortableItem key={songData.id} id={songData.id}>
+                <ViewSongRef
+                  songData={songData}
+                  editCallback={editSong}
+                />
+              </SortableItem>
+            ))}
+          </SortableContext>
+        </div>
+      </Dropable>
       <div className="container d-flex flex-column gap-2">
         <SortableContext
           id="unranked"
