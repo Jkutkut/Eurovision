@@ -1,4 +1,22 @@
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
+import {
+  closestCenter,
+  DndContext, 
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+
+import {SortableItem} from '../components/dnd';
+
 import ViewSong from "../components/ViewSong";
 import EditSong from "../components/EditSong";
 
@@ -22,7 +40,7 @@ const MainPage = ({ user }: Props) => {
       }
     }).then(response => response.json())
       .then(data => {
-        console.log("Data from server", data);
+        console.debug("Data from server", data);
         let myData: SongData[] = [];
         for (let i = 0; i < data.length; i++) {
           myData.push(new SongData(
@@ -40,11 +58,6 @@ const MainPage = ({ user }: Props) => {
         setMyData(myData);
       });
   }, []);
-
-  const isLoading = myData.length == 0;
-  if (isLoading) {
-    return <pre>Loading...</pre>;
-  }
 
   const editSong = (country: string) => {
     console.log("Edit song: " + country);
@@ -87,6 +100,42 @@ const MainPage = ({ user }: Props) => {
 
   const ptsAvailable = pointsAvailable(myData);
 
+  // TODO refactor
+  const [activeId, setActiveId] = useState(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {distance: 10}
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragStart = (event) => {
+    const {active} = event;
+    setActiveId(active.id);
+  };
+  
+  const handleDragEnd = (event) => {
+    const {active, over} = event;
+    console.log("Drag end", active.id, over.id);
+    if (active.id !== over.id) {
+      const oldIndex = myData.findIndex(item => item.id == active.id);
+      const newIndex = myData.findIndex(item => item.id == over.id);
+      console.log(oldIndex, newIndex);
+      if (oldIndex == -1 || newIndex == -1) {
+        return;
+      }
+      setMyData((items) => arrayMove(items, oldIndex, newIndex));
+    }
+    setActiveId(null);
+  }
+
+  const isLoading = myData.length == 0;
+  if (isLoading) {
+    return <pre>Loading...</pre>;
+  }
+
   return (<>
     <div className="container mt-3">
       <div className="row align-items-end">
@@ -109,16 +158,36 @@ const MainPage = ({ user }: Props) => {
       />
     }
     <div key="song-list" className="container d-flex flex-column gap-2">
-      {myData.map((item: SongData) => (
-        <ViewSong
-          key={item.song.country}
-          songData={item}
-          editCallback={editSong}
-        />
-      ))}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext 
+          items={myData}
+          strategy={verticalListSortingStrategy}
+        >
+          {myData.map((songData: SongData) => (
+            <SortableItem key={songData.id} id={songData.id}>
+              <ViewSongRef
+                songData={songData}
+                editCallback={editSong}
+              />
+            </SortableItem>
+          ))}
+        </SortableContext>
+        <DragOverlay>
+          {activeId && <ViewSong songData={myData.find(songData => songData.id == activeId)!} editCallback={editSong} />}
+        </DragOverlay>
+      </DndContext>
     </div>
   </>);
-}
+};
+
+const ViewSongRef = forwardRef((props: any, ref) => {
+  return <ViewSong {...props} ref={ref} />
+});
 
 const logout = () => {
   localStorage.removeItem('login');

@@ -19,7 +19,7 @@ const ViewSong = ({ songData, editCallback }: Props) => {
   const hasBeenEdited = nickname != "" || points != SongData.NO_POINTS || notes != "";
 
   return <>
-    <div className="card">
+    <div className="card" style={{"touchAction": "none"}}>
       <div className="card-body" onClick={toggleExpanded}>
         <div className="row d-flex align-items-center">
           <div className="col text-truncate">
