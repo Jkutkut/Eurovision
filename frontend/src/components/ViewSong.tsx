@@ -11,7 +11,9 @@ const ViewSong = ({ songData, editCallback }: Props) => {
 
   const {nickname, points, notes} = songData;
   const { artist, song, country: fullCountry, link } = songData.song;
-  const [ countryFlag, ...country ] = fullCountry.split(" ");
+  const countryWords = fullCountry.split(" ");
+  const [ countryFlag ] = countryWords;
+  const country = countryWords.slice(1).join(" ");
 
   const toggleExpanded = () => setExpanded(!expanded);
   const editSong = () => editCallback(songData.song.country);

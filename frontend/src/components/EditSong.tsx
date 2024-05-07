@@ -5,24 +5,17 @@ import { useState } from 'react';
 
 interface Props {
   songData: SongData;
-  pointsAvailable: number[];
   saveCallback: (newSongData: SongData) => void;
   cancelCallback: () => void;
 }
 
-const EditSong = ({songData, pointsAvailable, saveCallback, cancelCallback}: Props) => {
+const EditSong = ({songData, saveCallback, cancelCallback}: Props) => {
+  // TODO use form hook
   const [ nick, setNick ] = useState(songData.nickname);
-  const [ points, setPoints ] = useState(songData.points);
   const [ notes, setNotes ] = useState(songData.notes);
 
   const save = () => {
     let newSongData = songData;
-    // const nickContainer = document.getElementById("nickname") as HTMLInputElement;
-    // const pointsContainer = document.getElementById("points") as HTMLSelectElement;
-    // const notesContainer = document.getElementById("notes") as HTMLTextAreaElement;
-    // newSongData.nickname = nickContainer.value;
-    // newSongData.points = parseInt(pointsContainer.value);
-    // newSongData.notes = notesContainer.value;
     newSongData.nickname = nick;
     newSongData.points = points;
     newSongData.notes = notes;
@@ -54,20 +47,10 @@ const EditSong = ({songData, pointsAvailable, saveCallback, cancelCallback}: Pro
             id="nickname" aria-describedby="nicknameHelp"
             value={nick} onChange={(e) => setNick(e.target.value)}/>
         </div>
-        
-        <div className="form-group">
-          <label htmlFor="points">Points</label>
-          <select className="form-control" id="points" onChange={(e) => setPoints(parseInt(e.target.value))} value={points}>
-            <option value={SongData.NO_POINTS}>No points</option>
-            <option value={0}>0</option>
-            {pointsAvailable.map((item: number) => (
-              <option key={item} value={item}>{item}</option>
-            ))}
-          </select>
-        </div>
         <div className="form-group">
           <label htmlFor="notes">Notes</label>
           <textarea className="form-control" id="notes" rows={3}
+            placeholder="Anything you want to remember about this song"
             value={notes} onChange={(e) => setNotes(e.target.value)}/>
         </div>
       </Modal.Body>

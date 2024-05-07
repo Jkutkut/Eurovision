@@ -28,9 +28,18 @@ interface Props {
 }
 
 const MainPage = ({ user }: Props) => {
-  const MY_URL = "http://localhost:9000/";
-  const [ myData, setMyData ] = useState<SongData[]>([]);
+  // TODO hook rest service
+  // TODO rework points
+  // TODO refactor
+  const MY_URL = `http://${window.location.hostname}:9000/`;
+  const [ myData, setMyRealData ] = useState<SongData[]>([]);
   const [ editorSong, setEditorSong ] = useState(-1);
+  const [dragged, setDragged] = useState(null);
+
+  const setMyData = (data: SongData[]) => {
+    uploadSongData(data);
+    setMyRealData(data);
+  }
 
   useEffect(() => {
     fetch(`${MY_URL}api/${user}`, {
@@ -73,6 +82,18 @@ const MainPage = ({ user }: Props) => {
     setEditorSong(song);
   };
 
+  const uploadSongData = (myData: SongData[]) => {
+    console.log("Upload song data");
+    let data: string = JSON.stringify(myData);
+    fetch(`${MY_URL}api/${user}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: data
+    });
+  };
+
   const saveSongData = (newSongData: SongData) => {
     console.log("Update song data", newSongData);
     let i: number;
@@ -85,14 +106,6 @@ const MainPage = ({ user }: Props) => {
     if (i == myData.length)
       throw new Error("UPS, i can't find the country");
     myData[i] = newSongData;
-    let data: string = JSON.stringify(myData);
-    fetch(`${MY_URL}api/${user}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: data
-    });
     setMyData(myData);
     console.log("Song data updated", i);
     setEditorSong(-1);
@@ -101,7 +114,6 @@ const MainPage = ({ user }: Props) => {
   const ptsAvailable = pointsAvailable(myData);
 
   // TODO refactor
-  const [activeId, setActiveId] = useState(null);
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {distance: 10}
@@ -113,28 +125,70 @@ const MainPage = ({ user }: Props) => {
 
   const handleDragStart = (event) => {
     const {active} = event;
-    setActiveId(active.id);
+    setDragged(active.id);
   };
   
   const handleDragEnd = (event) => {
+    // TODO refactor
+    console.log("Drag end", event);
     const {active, over} = event;
     console.log("Drag end", active.id, over.id);
     if (active.id !== over.id) {
       const oldIndex = myData.findIndex(item => item.id == active.id);
       const newIndex = myData.findIndex(item => item.id == over.id);
-      console.log(oldIndex, newIndex);
       if (oldIndex == -1 || newIndex == -1) {
         return;
       }
-      setMyData((items) => arrayMove(items, oldIndex, newIndex));
+      const newData = arrayMove(myData, oldIndex, newIndex);
+      const activeZone = active.data.current.sortable.containerId;
+      const overZone = over.data.current.sortable.containerId;
+      if (activeZone !== overZone) {
+        if (activeZone == "ranking") { // From ranking to unranked
+          newData[newIndex].points = SongData.NO_POINTS;
+        }
+        else { // From unranked to ranking
+          newData[newIndex].points = 0; // Will be updated now
+          const points = [12, 10, 8, 6, 5, 4, 3, 2, 1];
+          let startingIndex = 0;
+          for (let i = 0; i < newIndex; i++) {
+            if (newData[i].points == SongData.NO_POINTS)
+              continue;
+            startingIndex++;
+          }
+          for (let i = newIndex, j = startingIndex; i < newData.length; i++) {
+            if (newData[i].points == SongData.NO_POINTS)
+              continue;
+            let point = j < points.length ? points[j++] : 0;
+            newData[i].points = point;
+          }
+        }
+      }
+      else if (activeZone == "ranking") {
+        const points = [12, 10, 8, 6, 5, 4, 3, 2, 1];
+        for (let i = 0, j = 0; i < newData.length; i++) {
+          if (newData[i].points == SongData.NO_POINTS)
+            continue;
+          let point = j < points.length ? points[j++] : 0;
+          newData[i].points = point;
+        }
+      }
+      setMyData(newData);
     }
-    setActiveId(null);
+    setDragged(null);
   }
+
+  const dragOver = (event) => {
+    console.log("Drag over", event);
+  };
 
   const isLoading = myData.length == 0;
   if (isLoading) {
     return <pre>Loading...</pre>;
   }
+
+  const ranking = myData
+    .filter(data => data.points != SongData.NO_POINTS);
+  const unranked = myData.filter(data => data.points == SongData.NO_POINTS);
 
   return (<>
     <div className="container mt-3">
@@ -152,23 +206,44 @@ const MainPage = ({ user }: Props) => {
     {editorSong != -1 &&
       <EditSong
         songData={myData[editorSong]}
-        pointsAvailable={pointsAvailableSong(ptsAvailable, myData[editorSong])}
         cancelCallback={() => setEditorSong(-1)}
         saveCallback={saveSongData}
       />
     }
-    <div key="song-list" className="container d-flex flex-column gap-2">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragOver={dragOver}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="container d-flex flex-column gap-2 pt-3 pb-3"
+        style={{
+          background: "yellow"
+        }}
       >
-        <SortableContext 
-          items={myData}
+        <SortableContext
+          id="ranking"
+          items={ranking}
           strategy={verticalListSortingStrategy}
         >
-          {myData.map((songData: SongData) => (
+          {ranking.map((songData: SongData) => (
+            <SortableItem key={songData.id} id={songData.id}>
+              <ViewSongRef
+                songData={songData}
+                editCallback={editSong}
+              />
+            </SortableItem>
+          ))}
+        </SortableContext>
+      </div>
+      <div className="container d-flex flex-column gap-2">
+        <SortableContext
+          id="unranked"
+          items={unranked}
+          strategy={verticalListSortingStrategy}
+        >
+          {unranked.map((songData: SongData) => (
             <SortableItem key={songData.id} id={songData.id}>
               <ViewSongRef
                 songData={songData}
@@ -178,10 +253,10 @@ const MainPage = ({ user }: Props) => {
           ))}
         </SortableContext>
         <DragOverlay>
-          {activeId && <ViewSong songData={myData.find(songData => songData.id == activeId)!} editCallback={editSong} />}
+          {dragged && <ViewSongRef songData={myData.find(item => item.id == dragged)} editCallback={editSong} />}
         </DragOverlay>
-      </DndContext>
-    </div>
+      </div>
+    </DndContext>
   </>);
 };
 
