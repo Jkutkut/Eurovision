@@ -1,85 +1,114 @@
-import { useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
-const finalSpaceCharacters = [
-  {
-    id: 'abc1',
-    name: 'Element 01'
-  },
-  {
-    id: 'abc2',
-    name: 'Element 02'
-  },
-  {
-    id: 'abc3',
-    name: 'Element 03'
-  }
-];
+import {useState} from 'react';
+import {
+  closestCenter,
+  DndContext, 
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 const App = () => {
-  const [characters, updateCharacters] = useState(finalSpaceCharacters);
-  const [v, setv] = useState(0);
+  const [activeId, setActiveId] = useState(null);
+  const [items, setItems] = useState(['1', '2', '3']);
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-  function onDragEnd(result) {
-    console.warn(result);
-    if (!result.destination) {
-      return;
+  const handleDragStart = (event) => {
+    const {active} = event;
+    setActiveId(active.id);
+  };
+  
+  const handleDragEnd = (event) => {
+    const {active, over} = event;
+    if (active.id !== over.id) {
+      setItems((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
     }
-    if (result.destination.droppableId == result.source.droppableId && result.destination.index === result.source.index) {
-      return;
-    }
-
-    const newCharsArr = Array.from(characters);
-    const movedElement = newCharsArr.splice(result.source.index, 1)[0];
-    newCharsArr.splice(result.destination.index, 0, movedElement);
-
-    console.log(newCharsArr, movedElement);
-    updateCharacters(newCharsArr);
+    setActiveId(null);
   }
 
-  return <>
-    <div
-      className="w-100"
-      style={{ height: "100vh" }}
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
     >
-      <button onClick={() => setv(v + 1)}>up {v}</button>
-      <DragDropContext
-        onDragStart={console.log}
-        onDragUpdate={console.debug}
-        onDragEnd={onDragEnd}
+      <SortableContext 
+        items={items}
+        strategy={verticalListSortingStrategy}
       >
-        <Droppable droppableId="characters">
-          {(provided) => (
-            <div
-              className="p-3 d-flex flex-column"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              style={{
-                background: "#EEE"
-              }}
-            >
-              {characters.map(({id, name}, index) => (
-                <Draggable key={id} draggableId={id} index={index}>
-                  {(p) => (
-                    <div
-                      {...p.draggableProps /*Element to move*/}
-                      {...p.dragHandleProps /*Control container*/}
-                      ref={p.innerRef}
-                      className="p-3 m-3"
-                      style={{border: "2px solid black"}}
-                    >
-                      { name }
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </div>
-  </>;
+        {items.map(id => <SortableItem key={id} id={id} />)}
+      </SortableContext>
+      <DragOverlay>
+      {/*
+        {activeId && <Item id={"dragged" + activeId} />}
+      */}
+      </DragOverlay>
+    </DndContext>
+  );
 }
 
 export default App;
+
+import {useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
+
+
+export function SortableItem(props) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({id: props.id});
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition
+  };
+
+  const value = props.id
+  
+  return (
+    <Item ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {value}
+    </Item>
+  );
+}
+
+import {forwardRef} from 'react';
+
+export const Item = forwardRef(({id, ...props}, ref) => {
+  const {style, ...rest} = props;
+  const itemStyle = {
+    touchAction: 'none',
+    width: '100%',
+    height: '100px',
+    backgroundColor: '#f0f0f0',
+    margin: '0 0 4px 0',
+    ...style,
+  };
+  return (
+    <div {...rest} style={itemStyle} ref={ref}>
+      Element Original: {props.children} {id && `Dragged: ${id}`}
+    </div>
+  )
+});
