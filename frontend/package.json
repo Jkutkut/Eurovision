@@ -4,12 +4,11 @@
   "version": "2.0.2",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite --port $PORT",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
-  "proxy": "http://172.17.0.1:9000",
   "dependencies": {
     "bootstrap": "^5.2.3",
     "react": "^18.2.0",
