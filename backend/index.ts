@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import EurovisionDB from './src/db';
+import { EurovisionDB, EurovisionSqliteDB } from './src/db';
 
 const cors = require('cors');
 const path = require('path');
@@ -24,24 +24,62 @@ app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
 
-const db = new EurovisionDB();
 
-app.get('/api/:key', cors(), (req: Request, res: Response) => {
-  db.getData(req.params.key, (data: any) => {
+// V1
+
+const db_files = new EurovisionDB();
+
+app.get('/api/v1/:key', cors(), (req: Request, res: Response) => {
+  db_files.getData(req.params.key, (data: any) => {
     res.send(data);
   }, (err: string) => {
-    res.send(db.getDefault());
+    res.send(db_files.getDefault());
   });
 });
 
-app.post('/api/:key', cors(), (req: Request, res: Response) => {
-  db.setData(req.params.key, req.body, () => {
+app.post('/api/v1/:key', cors(), (req: Request, res: Response) => {
+  db_files.setData(req.params.key, req.body, () => {
     res.send('Data saved successfully');
   });
 });
 
-app.delete('/api/:key', cors(), (req: Request, res: Response) => {
-  db.deleteData(req.params.key, () => {
+app.delete('/api/v1/:key', cors(), (req: Request, res: Response) => {
+  db_files.deleteData(req.params.key, () => {
     res.send('Data deleted successfully');
   });
+});
+
+// V2
+app.get('/api/v2/users', cors(), (req: Request, res: Response) => {
+  const db = EurovisionSqliteDB.getInstance();
+
+  const users = db.getUsers();
+  res.send(users);
+});
+
+app.get('/api/v2/scores', cors(), (req: Request, res: Response) => {
+  const user = req.query.u; // TODO refactor
+  if (typeof user !== 'string') {
+    res.status(400).send('Invalid user: ' + user);
+    return;
+  }
+  const db = EurovisionSqliteDB.getInstance();
+  const scores = db.getScores(user);
+  res.send(scores);
+});
+
+app.post("/api/v2/add/user", cors(), (req: Request, res: Response) => {
+  const user = req.query.u;
+  if (typeof user !== 'string') {
+    res.status(400).send('Invalid user');
+    return;
+  }
+  const db = EurovisionSqliteDB.getInstance();
+  const result = db.addUser(user);
+  if (!result) {
+    res.status(200).send();
+  }
+  else {
+    res.status(400).send(result);
+  }
 });

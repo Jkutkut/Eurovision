@@ -14,7 +14,7 @@ interface useRestAPIHook {
 
 const useRestAPI = ({user}: Props) => {
   const MY_URL = `http://${window.location.hostname}:9000/`; // TODO
-  const GET_DATA_URL = `${MY_URL}api/${user}`;
+  const GET_DATA_URL = `${MY_URL}api/v1/${user}`;
   const POST_DATA_URL = GET_DATA_URL;
   const [ data, setData ] = useState<SongData[]>([]);
   const [ isLoading, setIsLoading ] = useState<boolean>(true);

@@ -28,7 +28,6 @@ interface Props {
 }
 
 const MainPage = ({ user }: Props) => {
-  // TODO hook rest service
   // TODO rework points
   // TODO refactor
   const { myData, setMyData, isLoading } = useRestAPI({user});
