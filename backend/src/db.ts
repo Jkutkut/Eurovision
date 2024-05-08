@@ -125,14 +125,14 @@ class EurovisionSqliteDB {
     )).run();
     this.db.prepare(this.treatSql(
       `CREATE TABLE IF NOT EXISTS score (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        song INTEGER NOT NULL,
+        song_id INTEGER NOT NULL,
 
         points INTEGER NOT NULL,
         nickname TEXT,
         notes TEXT,
 
+        PRIMARY KEY (user_id, song_id),
         FOREIGN KEY (user_id) REFERENCES user(id)
       )`
     )).run();
@@ -192,22 +192,39 @@ class EurovisionSqliteDB {
   }
 
   public setScores(user: string, scores: EurovisionScore[]) {
-    // const stmt = this.db.prepare(this.treatSql(
-    //   `INSERT INTO score (user_id, song, points, nickname, notes)
-    //    VALUES (@user_id, @song, @points, @nickname, @notes)`
-    // ));
+    const stmt = this.db.prepare(this.treatSql(`
+      INSERT OR REPLACE INTO score (song_id, points, nickname, notes, user_id)
+      VALUES (
+        @song_id, @points, @nickname, @notes, @user_id
+      )`
+    ));
+    const result = this.db.prepare('SELECT id FROM user WHERE name = ?').get(user) as any;
+    if (!result) {
+      return 'User not found';
+    }
+    const { id: userId } = result;
+    const scoresToInsert = scores.map((score) => ({
+      user_id: userId,
+      ...score
+    }));
+    this.db.transaction(() => {
+      for (const score of scoresToInsert) {
+        console.log(score);
+        stmt.run(score);
+      }
+    })();
+  }
 
-    // const scoresToInsert = scores.map((score, idx) => ({
-    //   uId: idx,
-
-    // })
-
-    console.error('Not implemented');
+  public resetDb() {
+    this.db.exec('DROP TABLE IF EXISTS score');
+    this.db.exec('DROP TABLE IF EXISTS user');
+    this.initDb();
   }
 
 }
 
 interface EurovisionScore {
+  song_id: number;
   nickname: string;
   notes: string;
   points: number;

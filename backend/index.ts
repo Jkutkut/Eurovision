@@ -68,7 +68,7 @@ app.get('/api/v2/scores', cors(), (req: Request, res: Response) => {
   res.send(scores);
 });
 
-app.post("/api/v2/add/user", cors(), (req: Request, res: Response) => {
+app.post("/api/v2/user", cors(), (req: Request, res: Response) => {
   const user = req.query.u;
   if (typeof user !== 'string') {
     res.status(400).send('Invalid user');
@@ -76,10 +76,33 @@ app.post("/api/v2/add/user", cors(), (req: Request, res: Response) => {
   }
   const db = EurovisionSqliteDB.getInstance();
   const result = db.addUser(user);
+  if (!result) { // TODO refactor
+    res.status(200).send();
+  }
+  else {
+    res.status(400).send(result);
+  }
+});
+
+app.put("/api/v2/scores", cors(), (req: Request, res: Response) => {
+  const body = req.body;
+  console.log('body', body);
+  const user = req.query.u;
+  if (typeof user !== 'string') {
+    res.status(400).send('Invalid user');
+    return;
+  }
+  const db = EurovisionSqliteDB.getInstance();
+  const result = db.setScores(user, body);
   if (!result) {
     res.status(200).send();
   }
   else {
     res.status(400).send(result);
   }
+});
+
+app.delete("/api/v2/harakiri", cors(), (req: Request, res: Response) => {
+  EurovisionSqliteDB.getInstance().resetDb();
+  res.status(200).send();
 });
