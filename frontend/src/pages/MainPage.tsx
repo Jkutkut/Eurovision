@@ -159,7 +159,14 @@ const MainPage = ({ user }: Props) => {
   const unranked = myData.filter(data => data.points == SongData.NO_POINTS);
 
   return (<>
-    <div className="container mt-3">
+    {editorSong != -1 &&
+      <EditSong
+        songData={myData[editorSong]}
+        cancelCallback={() => setEditorSong(-1)}
+        saveCallback={saveSongData}
+      />
+    }
+    <div className="mt-3 ms-3 me-3">
       <div className="row align-items-end">
         <div className="col">
           <div className="h5 m-0">{user}</div>
@@ -171,43 +178,37 @@ const MainPage = ({ user }: Props) => {
     </div>
 
     <br/>
-    {editorSong != -1 &&
-      <EditSong
-        songData={myData[editorSong]}
-        cancelCallback={() => setEditorSong(-1)}
-        saveCallback={saveSongData}
-      />
-    }
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Dropable id="ranking-drop">
-        <div className="container d-flex flex-column gap-2 p-0 m-3 bg-secondary">
-          {ranking.length == 0 &&
-            <div className="text-center">
-              Drag a song here to rank it
-            </div>
-          }
-          <SortableContext
-            id="ranking"
-            items={ranking}
-            strategy={verticalListSortingStrategy}
-          >
-            {ranking.map((songData: SongData) => (
-              <SortableItem key={songData.id} id={songData.id}>
-                <ViewSongRef
-                  songData={songData}
-                  editCallback={editSong}
-                />
-              </SortableItem>
-            ))}
-          </SortableContext>
-        </div>
+      <Dropable id="ranking-drop"
+        className="d-flex flex-column gap-2 p-0 m-3"
+      >
+        {ranking.length == 0 &&
+          <div className="text-center pt-3 pb-3 bg-secondary">
+            Drag a song here to rank it
+          </div>
+        }
+        <SortableContext
+          id="ranking"
+          items={ranking}
+          strategy={verticalListSortingStrategy}
+        >
+          {ranking.map((songData: SongData) => (
+            <SortableItem key={songData.id} id={songData.id}>
+              <ViewSongRef
+                songData={songData}
+                editCallback={editSong}
+              />
+            </SortableItem>
+          ))}
+        </SortableContext>
       </Dropable>
-      <div className="container d-flex flex-column gap-2">
+      <hr/>
+      <div className="d-flex flex-column gap-2 p-0 m-3">
         <SortableContext
           id="unranked"
           items={unranked}

@@ -2,11 +2,12 @@ import {useDroppable} from '@dnd-kit/core';
 
 interface Props {
   id: string,
+  className?: string,
   style?: React.CSSProperties,
   children?: React.ReactNode
 }
 
-export const Dropable = ({id, style, children}: Props) => {
+export const Dropable = ({id, className, style, children}: Props) => {
   const {isOver, setNodeRef} = useDroppable({
     id
   });
@@ -16,7 +17,7 @@ export const Dropable = ({id, style, children}: Props) => {
   
   
   return (
-    <div ref={setNodeRef} style={componentStyle}>
+    <div ref={setNodeRef} className={className} style={componentStyle}>
       {children}
     </div>
   );
