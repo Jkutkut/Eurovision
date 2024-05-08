@@ -89,21 +89,22 @@ const MainPage = ({ user }: Props) => {
     if (active.id !== over.id) {
       if (over.id == "ranking-drop") {
         const newData = [...myData];
-        const newIndex = myData.findIndex(item => item.id == over.id);
-        newData[newIndex].points = 0; // Will be updated now
+        const oldIndex = myData.findIndex(item => item.id == active.id);
+        newData[oldIndex].points = 0; // Will be updated now
         const points = [12, 10, 8, 6, 5, 4, 3, 2, 1];
         let startingIndex = 0;
-        for (let i = 0; i < newIndex; i++) {
+        for (let i = 0; i < oldIndex; i++) {
           if (newData[i].points == SongData.NO_POINTS)
             continue;
           startingIndex++;
         }
-        for (let i = newIndex, j = startingIndex; i < newData.length; i++) {
+        for (let i = oldIndex, j = startingIndex; i < newData.length; i++) {
           if (newData[i].points == SongData.NO_POINTS)
             continue;
           let point = j < points.length ? points[j++] : 0;
           newData[i].points = point;
         }
+        setMyData(newData);
         return;
       }
 
