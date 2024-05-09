@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   login: (name: string) => void
@@ -6,7 +6,23 @@ interface Props {
 
 const Login = ({ login }: Props) => {
   const [name, setName] = useState('');
+  const [ isValid, setIsValid ] = useState(true);
   
+  useEffect(() => {
+    const input = document.getElementById('nickname') as HTMLInputElement;
+    input?.focus();
+    input?.select();
+  }, []);
+
+  const onUserInput = (value: string) => {
+    setName(value);
+    setIsValid(value.trim().length > 0);
+  }
+
+  const loginUser = () => {
+    login(name.trim());
+  };
+
   return (
     <>
       <div className="form-group" style={{padding: "20px"}}>
@@ -16,12 +32,16 @@ const Login = ({ login }: Props) => {
           <input type="text" className="form-control"
             id="nickname"
             aria-describedby="nicknameHelp"
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => onUserInput(e.target.value)}
           />
+          <small id="nicknameHelp" className={`form-text text-danger ${isValid && 'd-none'}`}>
+            Please enter your name
+          </small>
         </div>
         <br />
         <button
-          onClick={() => login(name)}
+          disabled={!isValid}
+          onClick={loginUser}
           className="btn btn-primary w-100"
         >
           Begin

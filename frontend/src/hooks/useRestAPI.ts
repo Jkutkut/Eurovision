@@ -29,9 +29,24 @@ interface useRestAPIHook {
 };
 
 const useRestAPI = () => {
-  const {user, login, logout} = useLogin();
+  const {user, login: logUser, logout} = useLogin();
   const [ data, setData ] = useState<SongData[]>([]);
   const [ isLoading, setIsLoading ] = useState<boolean>(true);
+
+  const login = (username: string) => {
+    if (user != null) {
+      return;
+    }
+    fetch(API.v2.postUser(username), {method: 'POST'})
+    .then(r => {
+      if (r.ok) {
+        logUser(username);
+      }
+      else {
+        throw new Error("Login failed");
+      }
+    });
+  };
 
   const setMyData = (data: SongData[]) => {
     setData(data);
