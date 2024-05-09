@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 interface useLoginHook {
   user: string | null;
   login: (user: string) => void;
+  logout: () => void;
 }
 
 const useLogin = () => {
@@ -21,9 +22,15 @@ const useLogin = () => {
     setUser(user);
   };
 
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem(USER_KEY);
+  }
+
   return {
     user,
-    login
+    login,
+    logout
   } as useLoginHook;
 };
 

@@ -181,7 +181,7 @@ class EurovisionSqliteDB {
   }
 
   public addUser(name: string) {
-    const stmt = this.db.prepare('INSERT INTO user (name) VALUES (?)');
+    const stmt = this.db.prepare('INSERT OR IGNORE INTO user (name) VALUES (?)');
     try {
       stmt.run(name);
     }

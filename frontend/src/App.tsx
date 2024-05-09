@@ -1,9 +1,10 @@
-import useLogin from './hooks/useLogin';
+import useRestAPI from './hooks/useRestAPI';
 import Login from './pages/Login';
 import MainPage from './pages/MainPage';
 
 const App = () => {
-  let { user, login } = useLogin();
+  const restAPI = useRestAPI();
+  const { user, login } = restAPI;
   if (user == null) {
     return (
       <Login login={login} />
@@ -11,7 +12,7 @@ const App = () => {
   }
 
   return <>
-    <MainPage user={user} />
+    <MainPage restAPI={restAPI} />
   </>;
 }
 

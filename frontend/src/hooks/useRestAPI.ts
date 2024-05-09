@@ -1,21 +1,35 @@
 import {useEffect, useState} from "react";
 import SongData from "../models/SongData";
 import Song from "../models/Song";
+import useLogin from "./useLogin";
 
-interface Props {
-  user: string
-}
+const API  = {
+  // TODO handle host + port
+  host: () => `http://${window.location.hostname}:9000`,
+  v1: {
+    getDataUser: (user: string) => `${API.host()}/api/v1/${user}`,
+    postDataUser: (user: string) => `${API.host()}/api/v1/${user}`
+  },
+  v2: {
+    getUsers: () => `${API.host()}/api/v2/users`,
+    getScores: (user: string) => `${API.host()}/api/v2/scores?u=${user}`,
+    postUser: (user: string) => `${API.host()}/api/v2/user?u=${user}`,
+    putScores: (user: string) => `${API.host()}/api/v2/scores?u=${user}`,
+    harakiri: () => `${API.host()}/api/v2/harakiri`
+  }
+};
 
 interface useRestAPIHook {
+  user: string | null;
+  login: (user: string) => void,
+  logout: () => void,
   myData: SongData[];
   setMyData: (data: SongData[]) => void,
   isLoading: boolean
 };
 
-const useRestAPI = ({user}: Props) => {
-  const MY_URL = `http://${window.location.hostname}:9000/`; // TODO
-  const GET_DATA_URL = `${MY_URL}api/v1/${user}`;
-  const POST_DATA_URL = GET_DATA_URL;
+const useRestAPI = () => {
+  const {user, login, logout} = useLogin();
   const [ data, setData ] = useState<SongData[]>([]);
   const [ isLoading, setIsLoading ] = useState<boolean>(true);
 
@@ -25,9 +39,12 @@ const useRestAPI = ({user}: Props) => {
   };
 
   const uploadSongData = (myData: SongData[]) => {
+    if (user == null) {
+      return;
+    }
     console.debug("Upload song data");
     let data: string = JSON.stringify(myData);
-    fetch(POST_DATA_URL, {
+    fetch(API.v1.postDataUser(user), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +54,10 @@ const useRestAPI = ({user}: Props) => {
   };
 
   useEffect(() => {
-    fetch(GET_DATA_URL, {
+    if (user == null) {
+      return;
+    }
+    fetch(API.v1.getDataUser(user), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -48,9 +68,12 @@ const useRestAPI = ({user}: Props) => {
         setData(json2SongData(data));
         setIsLoading(false);
       });
-  }, []);
+  }, [ user ]);
 
   return {
+    user,
+    login,
+    logout,
     myData: data,
     setMyData,
     isLoading

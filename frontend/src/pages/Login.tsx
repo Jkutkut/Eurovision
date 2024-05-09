@@ -14,10 +14,18 @@ const Login = ({ login }: Props) => {
         <div className="form-group">
           <label htmlFor="nickname">Name</label>
           <input type="text" className="form-control"
-            id="nickname" aria-describedby="nicknameHelp" onChange={(e) => setName(e.target.value)}/>
+            id="nickname"
+            aria-describedby="nicknameHelp"
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
         <br />
-        <button onClick={() => login(name)} className="btn btn-primary w-100">Login</button>
+        <button
+          onClick={() => login(name)}
+          className="btn btn-primary w-100"
+        >
+          Begin
+        </button>
       </div>
     </>
   );

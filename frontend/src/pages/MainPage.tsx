@@ -24,13 +24,16 @@ import SongData from "../models/SongData";
 import useRestAPI from "../hooks/useRestAPI";
 
 interface Props {
-  user: string;
+  restAPI: ReturnType<typeof useRestAPI>;
 }
 
-const MainPage = ({ user }: Props) => {
+const MainPage = ({restAPI}: Props) => {
   // TODO rework points
   // TODO refactor
-  const { myData, setMyData, isLoading } = useRestAPI({user});
+  const {
+    user, logout,
+    myData, setMyData, isLoading
+  } = restAPI;
   const [ editorSong, setEditorSong ] = useState(-1);
   const [dragged, setDragged] = useState(null);
 
@@ -172,7 +175,12 @@ const MainPage = ({ user }: Props) => {
           <div className="h5 m-0">{user}</div>
         </div>
         <div className="col text-end">
-          <button type="button" className="btn-close" aria-label="Close" onClick={logout}></button>
+          <button
+            type="button"
+            className="btn-close"
+            aria-label="Close"
+            onClick={logout}
+          ></button>
         </div>
       </div>
     </div>
@@ -237,10 +245,5 @@ const MainPage = ({ user }: Props) => {
 const ViewSongRef = forwardRef((props: any, ref) => {
   return <ViewSong {...props} ref={ref} />
 });
-
-const logout = () => {
-  localStorage.removeItem('login');
-  window.location.reload();
-};
 
 export default MainPage;
