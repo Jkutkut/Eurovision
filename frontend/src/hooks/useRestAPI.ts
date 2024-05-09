@@ -13,6 +13,7 @@ const API  = {
   v2: {
     getUsers: () => `${API.host()}/api/v2/users`,
     getScores: (user: string) => `${API.host()}/api/v2/scores?u=${user}`,
+    getEuroInfo: () => `${API.host()}/api/v2/eurovision/info`,
     postUser: (user: string) => `${API.host()}/api/v2/user?u=${user}`,
     putScores: (user: string) => `${API.host()}/api/v2/scores?u=${user}`,
     harakiri: () => `${API.host()}/api/v2/harakiri`
@@ -23,15 +24,17 @@ interface useRestAPIHook {
   user: string | null;
   login: (user: string) => void,
   logout: () => void,
-  myData: SongData[];
-  setMyData: (data: SongData[]) => void,
+  euroInfo: any[], // TODO model
+  userScores: any[], // TODO model
+  save: (userScores: any) => void, // TODO model
   isLoading: boolean
 };
 
 const useRestAPI = () => {
   const {user, login: logUser, logout} = useLogin();
-  const [ data, setData ] = useState<SongData[]>([]);
-  const [ isLoading, setIsLoading ] = useState<boolean>(true);
+  const [ euroInfo, setEuroInfo ] = useState<any | null>(null);
+  const [ userScores, setUserScores ] = useState<any[]>([]);
+  const [ isLoading, setIsLoading ] = useState<boolean>(false);
 
   const login = (username: string) => {
     if (user != null) {
@@ -48,23 +51,49 @@ const useRestAPI = () => {
     });
   };
 
-  const setMyData = (data: SongData[]) => {
-    setData(data);
-    uploadSongData(data);
-  };
-
-  const uploadSongData = (myData: SongData[]) => {
-    if (user == null) {
+  const getEuroInfo = () => {
+    if (euroInfo !== null) {
       return;
     }
-    console.debug("Upload song data");
-    let data: string = JSON.stringify(myData);
-    fetch(API.v1.postDataUser(user), {
-      method: 'POST',
+    console.debug("Getting euro info");
+    fetch(API.v2.getEuroInfo(), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => setEuroInfo(data));
+  };
+
+  const getScores = (user: string) => {
+    console.debug("Getting scores for " + user);
+    fetch(API.v2.getScores(user), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => setUserScores(data));
+  };
+
+  const save = (userScores: any) => { // TODO model
+    fetch(API.v2.putScores(user), {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: data
+      body: JSON.stringify(userScores)
+    })
+    .then(r => {
+      if (r.ok) {
+        console.debug("Scores saved");
+        setUserScores(userScores);
+      }
+      else {
+        console.error("Scores saving failed");
+      }
     });
   };
 
@@ -72,41 +101,28 @@ const useRestAPI = () => {
     if (user == null) {
       return;
     }
-    fetch(API.v1.getDataUser(user), {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    }).then(response => response.json())
-      .then(data => {
-        console.debug("Data from server", data);
-        setData(json2SongData(data));
-        setIsLoading(false);
-      });
-  }, [ user ]);
+    setIsLoading(true);
+    getEuroInfo();
+    getScores(user);
+  }, [user]);
+
+  useEffect(() => {
+    const currentIsLoading = user == null ||
+      (euroInfo == null || userScores.length == 0);
+    if (currentIsLoading != isLoading) {
+      setIsLoading(currentIsLoading);
+    }
+  }, [user, euroInfo, userScores]);
 
   return {
     user,
     login,
     logout,
-    myData: data,
-    setMyData,
+    euroInfo,
+    userScores,
+    save,
     isLoading
   } as useRestAPIHook;
-};
-
-const json2SongData = (json: any): SongData[] => {
-  return json.map((item: any) => new SongData(
-    new Song(
-      item.song.country,
-      item.song.artist,
-      item.song.song,
-      item.song.link
-    ),
-    item.points,
-    item.nickname,
-    item.notes
-  ));
 };
 
 export default useRestAPI;

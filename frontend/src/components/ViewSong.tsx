@@ -1,22 +1,28 @@
-import { useState } from "react";
-import SongData from "../models/SongData";
+import { forwardRef, useState } from "react";
+import SongData from "../models/SongData"; // TODO remove
+import Song from "../models/Song";
 
 interface Props {
-  songData: SongData;
+  song: Song;
+  songScore: any | null; // TODO
   editCallback: (country: string) => void;
 }
 
-const ViewSong = ({ songData, editCallback }: Props) => {
+const ViewSong = ({ song: songObj, songScore, editCallback }: Props) => {
   const [ expanded, setExpanded ] = useState(false);
 
-  const {nickname, points, notes} = songData;
-  const { artist, song, country: fullCountry, link } = songData.song;
+  const {nickname, points, notes} = songScore || {
+    nickname: "",
+    points: SongData.NO_POINTS,
+    notes: ""
+  };
+  const { song, artist, country: fullCountry, link } = songObj;
   const countryWords = fullCountry.split(" ");
   const [ countryFlag ] = countryWords;
   const country = countryWords.slice(1).join(" ");
 
   const toggleExpanded = () => setExpanded(!expanded);
-  const editSong = () => editCallback(songData.song.country);
+  const editSong = () => editCallback(country);
 
   const hasBeenEdited = nickname != "" || points != SongData.NO_POINTS || notes != "";
 
@@ -70,7 +76,7 @@ const ViewSong = ({ songData, editCallback }: Props) => {
             <div className="row mt-3">
               <div className="col-12">
                 <div className="h6">Notes</div>
-                {notes.split("\n").map((line, i) => <div key={i}>{line}</div>)}
+                {notes.split("\n").map((line: string, i: number) => <div key={i}>{line}</div>)}
               </div>
             </div>
           }
@@ -83,6 +89,11 @@ const ViewSong = ({ songData, editCallback }: Props) => {
       </div>
     </div>
   </>;
-}
+};
+
+const ViewSongRef = forwardRef((props: Props, ref) => {
+  return <ViewSong {...props} ref={ref} />
+});
 
 export default ViewSong;
+export { ViewSongRef };

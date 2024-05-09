@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import {
   closestCenter,
   DndContext, 
@@ -17,56 +17,73 @@ import {
 
 import {SortableItem, Dropable} from '../components/dnd';
 
-import ViewSong from "../components/ViewSong";
+import ViewSong, {ViewSongRef} from "../components/ViewSong";
 import EditSong from "../components/EditSong";
 
 import SongData from "../models/SongData";
 import useRestAPI from "../hooks/useRestAPI";
+import Song from "../models/Song";
 
 interface Props {
   restAPI: ReturnType<typeof useRestAPI>;
 }
 
 const MainPage = ({restAPI}: Props) => {
-  // TODO rework points
-  // TODO refactor
   const {
     user, logout,
-    myData, setMyData, isLoading
+    euroInfo, userScores,
+    save,
+    isLoading
   } = restAPI;
+
   const [ editorSong, setEditorSong ] = useState(-1);
   const [dragged, setDragged] = useState(null);
+  const [ myData, setMyData ] = useState<any[]>([]);
 
-  const editSong = (country: string) => {
-    console.log("Edit song: " + country);
-    let song: number = -1;
-    for (let i = 0; i < myData.length; i++) {
-      if (country == myData[i].song.country) {
-        song = i;
-        break;
-      }
+  const [ songsOrder, setSongsOrder ] = useState<number[]>([]);
+  
+  useEffect(() => {
+    if (euroInfo === null) {
+      setSongsOrder([]);
+      return;
     }
-    if (song == -1)
-      throw new Error("UPS, i can't find the country");
-    setEditorSong(song);
-  };
+    setSongsOrder(
+      euroInfo.countries.map((_: any, i: number) => i)
+    );
+  }, [euroInfo]);
 
-  const saveSongData = (newSongData: SongData) => {
-    console.log("Update song data", newSongData);
-    let i: number;
+  const editSong = (country: string) => {};
+  // const editSong = (country: string) => {
+  //   console.log("Edit song: " + country);
+  //   let song: number = -1;
+  //   for (let i = 0; i < myData.length; i++) {
+  //     if (country == myData[i].song.country) {
+  //       song = i;
+  //       break;
+  //     }
+  //   }
+  //   if (song == -1)
+  //     throw new Error("UPS, i can't find the country");
+  //   setEditorSong(song);
+  // };
 
-    for (i = 0; i < myData.length; i++) {
-      if (myData[i].song.country == newSongData.song.country) {
-        break;
-      }
-    }
-    if (i == myData.length)
-      throw new Error("UPS, i can't find the country");
-    myData[i] = newSongData;
-    setMyData(myData);
-    console.log("Song data updated", i);
-    setEditorSong(-1);
-  };
+  const saveSongData = (newSongData: SongData) => {}
+  // const saveSongData = (newSongData: SongData) => {
+  //   console.log("Update song data", newSongData);
+  //   let i: number;
+
+  //   for (i = 0; i < myData.length; i++) {
+  //     if (myData[i].song.country == newSongData.song.country) {
+  //       break;
+  //     }
+  //   }
+  //   if (i == myData.length)
+  //     throw new Error("UPS, i can't find the country");
+  //   myData[i] = newSongData;
+  //   setMyData(myData);
+  //   console.log("Song data updated", i);
+  //   setEditorSong(-1);
+  // };
 
   // TODO refactor
   const sensors = useSensors(
@@ -80,95 +97,35 @@ const MainPage = ({restAPI}: Props) => {
 
   const handleDragStart = (event) => {
     const {active} = event;
+    console.log("Drag start", active.id);
     setDragged(active.id);
   };
   
   const handleDragEnd = (event) => {
-    // TODO refactor
-    console.log("Drag end", event);
-    const {active, over} = event;
-    console.log("Drag end", active.id, over.id);
-    if (active.id !== over.id) {
-      if (over.id == "ranking-drop") {
-        const newData = [...myData];
-        const oldIndex = myData.findIndex(item => item.id == active.id);
-        newData[oldIndex].points = 0; // Will be updated now
-        const points = [12, 10, 8, 6, 5, 4, 3, 2, 1];
-        let startingIndex = 0;
-        for (let i = 0; i < oldIndex; i++) {
-          if (newData[i].points == SongData.NO_POINTS)
-            continue;
-          startingIndex++;
-        }
-        for (let i = oldIndex, j = startingIndex; i < newData.length; i++) {
-          if (newData[i].points == SongData.NO_POINTS)
-            continue;
-          let point = j < points.length ? points[j++] : 0;
-          newData[i].points = point;
-        }
-        setMyData(newData);
-        return;
-      }
-
-      const oldIndex = myData.findIndex(item => item.id == active.id);
-      const newIndex = myData.findIndex(item => item.id == over.id);
-      if (oldIndex == -1 || newIndex == -1) {
-        return;
-      }
-      const newData = arrayMove(myData, oldIndex, newIndex);
-      const activeZone = active.data.current.sortable.containerId;
-      const overZone = over.data.current.sortable.containerId;
-      if (activeZone !== overZone) {
-        if (activeZone == "ranking") { // From ranking to unranked
-          newData[newIndex].points = SongData.NO_POINTS;
-        }
-        else { // From unranked to ranking
-          newData[newIndex].points = 0; // Will be updated now
-          const points = [12, 10, 8, 6, 5, 4, 3, 2, 1];
-          let startingIndex = 0;
-          for (let i = 0; i < newIndex; i++) {
-            if (newData[i].points == SongData.NO_POINTS)
-              continue;
-            startingIndex++;
-          }
-          for (let i = newIndex, j = startingIndex; i < newData.length; i++) {
-            if (newData[i].points == SongData.NO_POINTS)
-              continue;
-            let point = j < points.length ? points[j++] : 0;
-            newData[i].points = point;
-          }
-        }
-      }
-      else if (activeZone == "ranking") {
-        const points = [12, 10, 8, 6, 5, 4, 3, 2, 1];
-        for (let i = 0, j = 0; i < newData.length; i++) {
-          if (newData[i].points == SongData.NO_POINTS)
-            continue;
-          let point = j < points.length ? points[j++] : 0;
-          newData[i].points = point;
-        }
-      }
-      setMyData(newData);
-    }
     setDragged(null);
-  }
+    const {active, over} = event;
+    // TODO
+  };
 
   if (isLoading) {
     return <pre>Loading...</pre>;
   }
 
-  const ranking = myData
-    .filter(data => data.points != SongData.NO_POINTS);
-  const unranked = myData.filter(data => data.points == SongData.NO_POINTS);
+  const ranking = userScores
+    .filter(score => score.points != SongData.NO_POINTS)
+    .map(score => score["song_id"]);
+  const unranked = songsOrder.filter(i => !ranking.includes(i));
 
-  return (<>
-    {editorSong != -1 &&
-      <EditSong
-        songData={myData[editorSong]}
-        cancelCallback={() => setEditorSong(-1)}
-        saveCallback={saveSongData}
-      />
-    }
+  console.log(
+  "dragged", dragged,
+  "\neuroInfo", euroInfo,
+  "\nuserScores", userScores,
+  "\nranking", ranking,
+  "\nunranked", unranked,
+  "\nsongsOrder", songsOrder
+  );
+
+  return <>
     <div className="mt-3 ms-3 me-3">
       <div className="row align-items-end">
         <div className="col">
@@ -184,7 +141,6 @@ const MainPage = ({restAPI}: Props) => {
         </div>
       </div>
     </div>
-
     <br/>
     <DndContext
       sensors={sensors}
@@ -192,29 +148,33 @@ const MainPage = ({restAPI}: Props) => {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Dropable id="ranking-drop"
-        className="d-flex flex-column gap-2 p-0 m-3"
-      >
-        {ranking.length == 0 &&
-          <div className="text-center pt-3 pb-3 bg-secondary">
-            Drag a song here to rank it
-          </div>
-        }
-        <SortableContext
-          id="ranking"
-          items={ranking}
-          strategy={verticalListSortingStrategy}
+      <div className="d-flex flex-column gap-2 p-0 m-3">
+        <Dropable id="ranking-drop"
         >
-          {ranking.map((songData: SongData) => (
-            <SortableItem key={songData.id} id={songData.id}>
-              <ViewSongRef
-                songData={songData}
-                editCallback={editSong}
-              />
-            </SortableItem>
-          ))}
-        </SortableContext>
-      </Dropable>
+          {ranking.length == 0 &&
+            <div className="text-center pt-3 pb-3 bg-secondary">
+              Drag a song here to rank it
+            </div>
+          }
+          <SortableContext
+            id="ranking"
+            items={ranking}
+            strategy={verticalListSortingStrategy}
+          >
+            {ranking.map((songId: number) => (
+              <SortableItem key={songId} id={songId.toString()}>
+                <ViewSongRef
+                  song={euroInfo.countries[songId]}
+                  songScore={userScores.find(
+                    score => score["song_id"] == songId
+                  )}
+                  editCallback={editSong}
+                />
+              </SortableItem>
+            ))}
+          </SortableContext>
+        </Dropable>
+      </div>
       <hr/>
       <div className="d-flex flex-column gap-2 p-0 m-3">
         <SortableContext
@@ -222,10 +182,13 @@ const MainPage = ({restAPI}: Props) => {
           items={unranked}
           strategy={verticalListSortingStrategy}
         >
-          {unranked.map((songData: SongData) => (
-            <SortableItem key={songData.id} id={songData.id}>
+          {unranked.map((songId: number) => (
+            <SortableItem key={songId} id={songId.toString()}>
               <ViewSongRef
-                songData={songData}
+                song={euroInfo.countries[songId]}
+                songScore={userScores.find(
+                  score => score["song_id"] == songId
+                )}
                 editCallback={editSong}
               />
             </SortableItem>
@@ -233,17 +196,16 @@ const MainPage = ({restAPI}: Props) => {
         </SortableContext>
         <DragOverlay>
           {dragged && <ViewSongRef
-            songData={myData.find(item => item.id == dragged)}
+            song={euroInfo.countries[dragged]}
+            songScore={userScores.find(
+              score => score["song_id"] == dragged
+            )}
             editCallback={editSong}
           />}
         </DragOverlay>
       </div>
     </DndContext>
-  </>);
+  </>;
 };
-
-const ViewSongRef = forwardRef((props: any, ref) => {
-  return <ViewSong {...props} ref={ref} />
-});
 
 export default MainPage;

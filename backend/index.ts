@@ -11,7 +11,7 @@ const port = process.env.PORT;
 
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST', 'DELETE']
+  methods: ['GET', 'POST', 'DELETE', 'PUT'],
 }));
 app.use(express.static('public'));
 app.use(express.json());
@@ -52,7 +52,6 @@ app.delete('/api/v1/:key', cors(), (req: Request, res: Response) => {
 // V2
 app.get('/api/v2/users', cors(), (req: Request, res: Response) => {
   const db = EurovisionSqliteDB.getInstance();
-
   const users = db.getUsers();
   res.send(users);
 });
@@ -66,6 +65,11 @@ app.get('/api/v2/scores', cors(), (req: Request, res: Response) => {
   const db = EurovisionSqliteDB.getInstance();
   const scores = db.getScores(user);
   res.send(scores);
+});
+
+app.get('/api/v2/eurovision/info', cors(), (req: Request, res: Response) => {
+  const db = EurovisionSqliteDB.getInstance();
+  res.send(db.eurovisionData);
 });
 
 app.post("/api/v2/user", cors(), (req: Request, res: Response) => {

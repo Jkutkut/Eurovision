@@ -96,10 +96,12 @@ class EurovisionSqliteDB {
   private constructor() {
     this.db = new Database(EurovisionSqliteDB.DB_PATH, { verbose: console.log });
     this.initDb();
-    this.readFile(EurovisionSqliteDB.JSON_PATH, (data: any) => {
-      this.eurovisionData = data;
-      console.log('Eurovision data loaded successfully');
-    }, (err: string) => console.error(err));
+
+    const data = fs.readFileSync(
+      EurovisionSqliteDB.JSON_PATH,
+      { encoding: 'utf8', flag: 'r' }
+    );
+    this.eurovisionData = JSON.parse(data);
   }
 
   public static getInstance(): EurovisionSqliteDB {
@@ -145,20 +147,6 @@ class EurovisionSqliteDB {
     process.on('SIGTERM', () => process.exit(128 + 15));
   }
 
-  private readFile(
-    filename: string,
-    callback: (data: any) => void,
-    error: (err: string) => void
-  ) {
-    fs.readFile(filename, (err: any, data: any) => {
-      if (err) {
-        error(err);
-        return;
-      }
-      callback(JSON.parse(data));
-    });
-  }
-
   public get eurovisionData() {
     return this._eurovisionData;
   }
@@ -175,7 +163,7 @@ class EurovisionSqliteDB {
 
   public getScores(user: string) {
     const stmt = this.db.prepare(this.treatSql(
-      'SELECT * FROM score WHERE user_id = ( SELECT id FROM user WHERE name = ? )'
+      'SELECT * FROM score WHERE user_id = ( SELECT id FROM user WHERE name = ? ) ORDER BY points DESC'
     ));
     return stmt.all(user);
   }
