@@ -40,18 +40,6 @@ const MainPage = ({restAPI}: Props) => {
   const [dragged, setDragged] = useState(null);
   const [ myData, setMyData ] = useState<any[]>([]);
 
-  const [ songsOrder, setSongsOrder ] = useState<number[]>([]);
-  
-  useEffect(() => {
-    if (euroInfo === null) {
-      setSongsOrder([]);
-      return;
-    }
-    setSongsOrder(
-      euroInfo.countries.map((_: any, i: number) => i)
-    );
-  }, [euroInfo]);
-
   const editSong = (country: string) => {};
   // const editSong = (country: string) => {
   //   console.log("Edit song: " + country);
@@ -97,14 +85,41 @@ const MainPage = ({restAPI}: Props) => {
 
   const handleDragStart = (event) => {
     const {active} = event;
-    console.log("Drag start", active.id);
+    console.debug("Drag start", active.id);
     setDragged(active.id);
   };
   
   const handleDragEnd = (event) => {
     setDragged(null);
     const {active, over} = event;
-    // TODO
+    if (active.id == over.id) {
+      return;
+    }
+    console.debug("Drag of", active.id, "over", over.id);
+    let newScores;
+    const activeSongId = parseInt(active.id);
+    const oldIndex = userScores.findIndex(song => song.song_id == activeSongId);
+    let newIndex;
+    if (over.id == "ranking-drop") {
+      newIndex = 0;
+    }
+    else {
+      const overSongId = parseInt(over.id);
+      newIndex = userScores.findIndex(song => song.song_id == overSongId);
+    }
+    newScores = arrayMove(userScores, oldIndex, newIndex);
+
+    if (over.id == "ranking-drop" || over.data.current.sortable.containerId == "ranking") {
+      // If the movement is in the ranking
+      newScores[newIndex].points = 0;
+    }
+    else if (active.data.current.sortable.containerId == "ranking") {
+      // Ranking to no ranking
+      console.debug(over.data.current.sortable.containerId);
+      newScores[newIndex].points = SongData.NO_POINTS;
+    }
+
+    save(newScores);
   };
 
   if (isLoading) {
@@ -112,17 +127,15 @@ const MainPage = ({restAPI}: Props) => {
   }
 
   const ranking = userScores
-    .filter(score => score.points != SongData.NO_POINTS)
-    .map(score => score["song_id"]);
-  const unranked = songsOrder.filter(i => !ranking.includes(i));
+    .filter(score => score.points != SongData.NO_POINTS);
+  const unranked = userScores
+    .filter(score => score.points == SongData.NO_POINTS);
 
-  console.log(
-  "dragged", dragged,
+  console.debug(
   "\neuroInfo", euroInfo,
   "\nuserScores", userScores,
   "\nranking", ranking,
   "\nunranked", unranked,
-  "\nsongsOrder", songsOrder
   );
 
   return <>
@@ -150,6 +163,7 @@ const MainPage = ({restAPI}: Props) => {
     >
       <div className="d-flex flex-column gap-2 p-0 m-3">
         <Dropable id="ranking-drop"
+          className="d-flex flex-column gap-2"
         >
           {ranking.length == 0 &&
             <div className="text-center pt-3 pb-3 bg-secondary">
@@ -161,13 +175,11 @@ const MainPage = ({restAPI}: Props) => {
             items={ranking}
             strategy={verticalListSortingStrategy}
           >
-            {ranking.map((songId: number) => (
-              <SortableItem key={songId} id={songId.toString()}>
+            {ranking.map((songScore: any) => (
+              <SortableItem key={songScore.song_id} id={songScore.song_id.toString()}>
                 <ViewSongRef
-                  song={euroInfo.countries[songId]}
-                  songScore={userScores.find(
-                    score => score["song_id"] == songId
-                  )}
+                  song={euroInfo.countries[songScore.song_id]}
+                  songScore={songScore}
                   editCallback={editSong}
                 />
               </SortableItem>
@@ -182,13 +194,11 @@ const MainPage = ({restAPI}: Props) => {
           items={unranked}
           strategy={verticalListSortingStrategy}
         >
-          {unranked.map((songId: number) => (
-            <SortableItem key={songId} id={songId.toString()}>
+          {unranked.map((score: any) => (
+            <SortableItem key={score.song_id} id={score.song_id.toString()}>
               <ViewSongRef
-                song={euroInfo.countries[songId]}
-                songScore={userScores.find(
-                  score => score["song_id"] == songId
-                )}
+                song={euroInfo.countries[score.song_id]}
+                songScore={score}
                 editCallback={editSong}
               />
             </SortableItem>

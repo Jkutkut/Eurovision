@@ -24,7 +24,7 @@ interface useRestAPIHook {
   user: string | null;
   login: (user: string) => void,
   logout: () => void,
-  euroInfo: any[], // TODO model
+  euroInfo: any, // TODO model
   userScores: any[], // TODO model
   save: (userScores: any) => void, // TODO model
   isLoading: boolean
@@ -79,17 +79,31 @@ const useRestAPI = () => {
   };
 
   const save = (userScores: any) => { // TODO model
+    if (user == null || euroInfo == null) {
+      return;
+    }
+    const scores = userScores.map((score: any, idx: number) => {
+      let points = score.points;
+      if (points != SongData.NO_POINTS && idx < euroInfo.points.length) {
+        points = euroInfo.points[idx];
+      }
+      return {
+        ...score,
+        points
+      }
+    });
+    console.debug("Saving scores", scores);
     fetch(API.v2.putScores(user), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(userScores)
+      body: JSON.stringify(scores)
     })
     .then(r => {
       if (r.ok) {
         console.debug("Scores saved");
-        setUserScores(userScores);
+        setUserScores(scores);
       }
       else {
         console.error("Scores saving failed");

@@ -131,8 +131,9 @@ class EurovisionSqliteDB {
         song_id INTEGER NOT NULL,
 
         points INTEGER NOT NULL,
-        nickname TEXT,
-        notes TEXT,
+        nickname TEXT DEFAULT '',
+        notes TEXT DEFAULT '',
+        rank INTEGER,
 
         PRIMARY KEY (user_id, song_id),
         FOREIGN KEY (user_id) REFERENCES user(id)
@@ -163,27 +164,49 @@ class EurovisionSqliteDB {
 
   public getScores(user: string) {
     const stmt = this.db.prepare(this.treatSql(
-      'SELECT * FROM score WHERE user_id = ( SELECT id FROM user WHERE name = ? ) ORDER BY points DESC'
+      `SELECT
+       song_id, points, nickname, notes
+       FROM score
+       WHERE user_id = ( SELECT id FROM user WHERE name = ? )
+       ORDER BY rank ASC`
     ));
     return stmt.all(user);
   }
 
   public addUser(name: string) {
-    const stmt = this.db.prepare('INSERT OR IGNORE INTO user (name) VALUES (?)');
-    try {
-      stmt.run(name);
+    const userExists = this.db.prepare('SELECT id FROM user WHERE name = ?').get(name);
+    if (userExists) {
+      return null;
     }
-    catch (err) {
-      return err;
-    }
+    this.db
+      .prepare('INSERT INTO user (name) VALUES (?)')
+      .run(name);
+    const { id: userId } = this.db.prepare('SELECT id FROM user WHERE name = ?').get(name) as any;
+    const stmt = this.db.prepare(this.treatSql(
+      `INSERT INTO score
+      ( user_id, song_id, points, rank )
+      VALUES (
+        @user_id, @song_id, @points, @rank
+      )`
+    ));
+    this.db.transaction(() => {
+      for (let i = 0; i < this.eurovisionData.countries.length; i++) {
+        stmt.run({
+          user_id: userId,
+          song_id: i,
+          points: -1,
+          rank: i
+        });
+      }
+    })();
     return null;
   }
 
   public setScores(user: string, scores: EurovisionScore[]) {
     const stmt = this.db.prepare(this.treatSql(`
-      INSERT OR REPLACE INTO score (song_id, points, nickname, notes, user_id)
+      INSERT OR REPLACE INTO score (song_id, points, nickname, notes, user_id, rank)
       VALUES (
-        @song_id, @points, @nickname, @notes, @user_id
+        @song_id, @points, @nickname, @notes, @user_id, @rank
       )`
     ));
     const result = this.db.prepare('SELECT id FROM user WHERE name = ?').get(user) as any;
@@ -191,9 +214,10 @@ class EurovisionSqliteDB {
       return 'User not found';
     }
     const { id: userId } = result;
-    const scoresToInsert = scores.map((score) => ({
+    const scoresToInsert = scores.map((score, rank) => ({
+      ...score,
       user_id: userId,
-      ...score
+      rank
     }));
     this.db.transaction(() => {
       for (const score of scoresToInsert) {
