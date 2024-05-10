@@ -83,15 +83,22 @@ const MainPage = ({restAPI}: Props) => {
     })
   );
 
-  const handleDragStart = (event) => {
+  const handleDragStart = (event: any) => {
     const {active} = event;
     console.debug("Drag start", active.id);
     setDragged(active.id);
   };
+
+  const handleDragOver = (event: any) => {
+    handleDrag(event, false);
+  };
   
-  const handleDragEnd = (event) => {
+  const handleDragEnd = (_) => {
     setDragged(null);
-    const {active, over} = event;
+    save(userScores, true);
+  };
+
+  const handleDrag = ({active, over}: any, saveRest: boolean) => {
     if (active.id == over.id) {
       return;
     }
@@ -118,18 +125,15 @@ const MainPage = ({restAPI}: Props) => {
       console.debug(over.data.current.sortable.containerId);
       newScores[newIndex].points = SongData.NO_POINTS;
     }
-
-    save(newScores);
+    save(newScores, saveRest);
   };
 
   if (isLoading) {
     return <pre>Loading...</pre>;
   }
 
-  const ranking = userScores
-    .filter(score => score.points != SongData.NO_POINTS);
-  const unranked = userScores
-    .filter(score => score.points == SongData.NO_POINTS);
+  const ranking = userScores.filter(score => score.points != SongData.NO_POINTS);
+  const unranked = userScores.filter(score => score.points == SongData.NO_POINTS);
 
   console.debug(
   "\neuroInfo", euroInfo,
@@ -159,6 +163,7 @@ const MainPage = ({restAPI}: Props) => {
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
       <div className="d-flex flex-column gap-2 p-0 m-3">

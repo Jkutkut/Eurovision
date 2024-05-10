@@ -26,7 +26,7 @@ interface useRestAPIHook {
   logout: () => void,
   euroInfo: any, // TODO model
   userScores: any[], // TODO model
-  save: (userScores: any) => void, // TODO model
+  save: (userScores: any, restSave?: boolean) => void, // TODO model
   isLoading: boolean
 };
 
@@ -78,7 +78,7 @@ const useRestAPI = () => {
     .then(data => setUserScores(data));
   };
 
-  const save = (userScores: any) => { // TODO model
+  const save = (userScores: any, restSave: boolean = false) => { // TODO model
     if (user == null || euroInfo == null) {
       return;
     }
@@ -92,6 +92,10 @@ const useRestAPI = () => {
         points
       }
     });
+    if (!restSave) {
+      setUserScores(scores);
+      return;
+    }
     console.debug("Saving scores", scores);
     fetch(API.v2.putScores(user), {
       method: 'PUT',
