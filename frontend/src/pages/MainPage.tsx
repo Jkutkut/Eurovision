@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   closestCenter,
   DndContext, 
@@ -17,12 +17,11 @@ import {
 
 import {SortableItem, Dropable} from '../components/dnd';
 
-import ViewSong, {ViewSongRef} from "../components/ViewSong";
+import {ViewSongRef} from "../components/ViewSong";
 import EditSong from "../components/EditSong";
 
-import SongData from "../models/SongData";
 import useRestAPI from "../hooks/useRestAPI";
-import Song from "../models/Song";
+import {NO_POINTS} from "../models/UserScore";
 
 interface Props {
   restAPI: ReturnType<typeof useRestAPI>;
@@ -38,7 +37,6 @@ const MainPage = ({restAPI}: Props) => {
 
   const [ editorSong, setEditorSong ] = useState(-1);
   const [dragged, setDragged] = useState(null);
-  const [ myData, setMyData ] = useState<any[]>([]);
 
   const editSong = (country: string) => {};
   // const editSong = (country: string) => {
@@ -55,7 +53,7 @@ const MainPage = ({restAPI}: Props) => {
   //   setEditorSong(song);
   // };
 
-  const saveSongData = (newSongData: SongData) => {}
+  const saveSongData = (newSongData: any) => {}
   // const saveSongData = (newSongData: SongData) => {
   //   console.log("Update song data", newSongData);
   //   let i: number;
@@ -93,7 +91,7 @@ const MainPage = ({restAPI}: Props) => {
     handleDrag(event, false);
   };
   
-  const handleDragEnd = (_) => {
+  const handleDragEnd = (_: any) => {
     setDragged(null);
     save(userScores, true);
   };
@@ -123,7 +121,7 @@ const MainPage = ({restAPI}: Props) => {
     else if (active.data.current.sortable.containerId == "ranking") {
       // Ranking to no ranking
       console.debug(over.data.current.sortable.containerId);
-      newScores[newIndex].points = SongData.NO_POINTS;
+      newScores[newIndex].points = NO_POINTS;
     }
     save(newScores, saveRest);
   };
@@ -132,8 +130,8 @@ const MainPage = ({restAPI}: Props) => {
     return <pre>Loading...</pre>;
   }
 
-  const ranking = userScores.filter(score => score.points != SongData.NO_POINTS);
-  const unranked = userScores.filter(score => score.points == SongData.NO_POINTS);
+  const ranking = userScores.filter(score => score.points != NO_POINTS);
+  const unranked = userScores.filter(score => score.points == NO_POINTS);
 
   console.debug(
   "\neuroInfo", euroInfo,

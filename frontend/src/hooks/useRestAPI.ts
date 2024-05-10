@@ -1,22 +1,24 @@
 import {useEffect, useState} from "react";
-import SongData from "../models/SongData";
-import Song from "../models/Song";
+
 import useLogin from "./useLogin";
+
+import UserScore, {NO_POINTS} from "../models/UserScore";
+import EurovisionInfo from "../models/EurovisionInfo";
 
 const API  = {
   // TODO handle host + port
-  host: () => `http://${window.location.hostname}:9000`,
+  host: (() => `http://${window.location.hostname}:9000`)(),
   v1: {
-    getDataUser: (user: string) => `${API.host()}/api/v1/${user}`,
-    postDataUser: (user: string) => `${API.host()}/api/v1/${user}`
+    getDataUser: (user: string) => `${API.host}/api/v1/${user}`,
+    postDataUser: (user: string) => `${API.host}/api/v1/${user}`
   },
   v2: {
-    getUsers: () => `${API.host()}/api/v2/users`,
-    getScores: (user: string) => `${API.host()}/api/v2/scores?u=${user}`,
-    getEuroInfo: () => `${API.host()}/api/v2/eurovision/info`,
-    postUser: (user: string) => `${API.host()}/api/v2/user?u=${user}`,
-    putScores: (user: string) => `${API.host()}/api/v2/scores?u=${user}`,
-    harakiri: () => `${API.host()}/api/v2/harakiri`
+    getUsers: () => `${API.host}/api/v2/users`,
+    getScores: (user: string) => `${API.host}/api/v2/scores?u=${user}`,
+    getEuroInfo: () => `${API.host}/api/v2/eurovision/info`,
+    postUser: (user: string) => `${API.host}/api/v2/user?u=${user}`,
+    putScores: (user: string) => `${API.host}/api/v2/scores?u=${user}`,
+    harakiri: () => `${API.host}/api/v2/harakiri`
   }
 };
 
@@ -24,9 +26,9 @@ interface useRestAPIHook {
   user: string | null;
   login: (user: string) => void,
   logout: () => void,
-  euroInfo: any, // TODO model
-  userScores: any[], // TODO model
-  save: (userScores: any, restSave?: boolean) => void, // TODO model
+  euroInfo: EurovisionInfo,
+  userScores: UserScore[],
+  save: (userScores: UserScore[], restSave?: boolean) => void,
   isLoading: boolean
 };
 
@@ -78,13 +80,13 @@ const useRestAPI = () => {
     .then(data => setUserScores(data));
   };
 
-  const save = (userScores: any, restSave: boolean = false) => { // TODO model
+  const save = (userScores: UserScore[], restSave: boolean = false) => {
     if (user == null || euroInfo == null) {
       return;
     }
     const scores = userScores.map((score: any, idx: number) => {
       let points = score.points;
-      if (points != SongData.NO_POINTS && idx < euroInfo.points.length) {
+      if (points != NO_POINTS && idx < euroInfo.points.length) {
         points = euroInfo.points[idx];
       }
       return {

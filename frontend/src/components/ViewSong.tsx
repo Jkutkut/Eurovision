@@ -1,6 +1,6 @@
 import { forwardRef, useState } from "react";
-import SongData from "../models/SongData"; // TODO remove
 import Song from "../models/Song";
+import {NO_POINTS} from "../models/UserScore";
 
 interface Props {
   song: Song;
@@ -13,7 +13,7 @@ const ViewSong = ({ song: songObj, songScore, editCallback }: Props) => {
 
   const {nickname, points, notes} = songScore || {
     nickname: "",
-    points: SongData.NO_POINTS,
+    points: NO_POINTS,
     notes: ""
   };
   const { song, artist, country: fullCountry, link } = songObj;
@@ -24,7 +24,7 @@ const ViewSong = ({ song: songObj, songScore, editCallback }: Props) => {
   const toggleExpanded = () => setExpanded(!expanded);
   const editSong = () => editCallback(country);
 
-  const hasBeenEdited = nickname != "" || points != SongData.NO_POINTS || notes != "";
+  const hasBeenEdited = nickname != "" || points != NO_POINTS || notes != "";
 
   return <>
     <div className="card" style={{"touchAction": "none"}}>
@@ -33,7 +33,7 @@ const ViewSong = ({ song: songObj, songScore, editCallback }: Props) => {
           <div className="col text-truncate pe-0">
             {countryFlag} {nickname || `${country} - ${song}`}
           </div>
-          {points != SongData.NO_POINTS &&
+          {points != NO_POINTS &&
             <div className="col-3 text-end text-nowrap text-truncate ps-0">
               {points} points
             </div>
