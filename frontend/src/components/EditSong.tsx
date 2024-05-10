@@ -1,8 +1,10 @@
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import { useState } from 'react';
+import useForm from '../hooks/useForm';
+
 import UserScore from '../models/UserScore';
 import Song from '../models/Song';
+
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 interface Props {
   song: Song;
@@ -12,17 +14,18 @@ interface Props {
 }
 
 const EditSong = ({song: songObj, userScore, saveCallback, cancelCallback}: Props) => {
-  // TODO use form hook
   const { artist, country, song } = songObj;
-  const [ nick, setNick ] = useState(userScore.nickname);
-  const [ notes, setNotes ] = useState(userScore.notes);
+  const { nickname, notes, onChange } = useForm({
+    nickname: userScore.nickname,
+    notes: userScore.notes
+  }) as any;
 
   console.debug("Edit song: " + country);
 
   const save = () => {
     saveCallback({
       ...userScore,
-      nickname: nick,
+      nickname,
       notes
     });
   };
@@ -49,14 +52,14 @@ const EditSong = ({song: songObj, userScore, saveCallback, cancelCallback}: Prop
         <div className="form-group">
           <label htmlFor="nickname">Nickname</label>
           <input type="text" className="form-control" placeholder="The name they'll be remembered by"
-            id="nickname" aria-describedby="nicknameHelp"
-            value={nick} onChange={(e) => setNick(e.target.value)}/>
+            name="nickname" aria-describedby="nicknameHelp"
+            value={nickname} onChange={(e) => onChange(e)} />
         </div>
         <div className="form-group">
           <label htmlFor="notes">Notes</label>
-          <textarea className="form-control" id="notes" rows={3}
+          <textarea className="form-control" name="notes" rows={3}
             placeholder="Anything you want to remember about this song"
-            value={notes} onChange={(e) => setNotes(e.target.value)}/>
+            value={notes} onChange={(e) => onChange(e)} />
         </div>
       </Modal.Body>
       <Modal.Footer>
