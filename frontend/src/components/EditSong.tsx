@@ -1,25 +1,30 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import SongData from '../models/SongData';
 import { useState } from 'react';
+import UserScore from '../models/UserScore';
+import Song from '../models/Song';
 
 interface Props {
-  songData: SongData;
-  saveCallback: (newSongData: SongData) => void;
+  song: Song;
+  userScore: UserScore;
+  saveCallback: (userScore: UserScore) => void;
   cancelCallback: () => void;
 }
 
-const EditSong = ({songData, saveCallback, cancelCallback}: Props) => {
+const EditSong = ({song: songObj, userScore, saveCallback, cancelCallback}: Props) => {
   // TODO use form hook
-  const [ nick, setNick ] = useState(songData.nickname);
-  const [ notes, setNotes ] = useState(songData.notes);
+  const { artist, country, song } = songObj;
+  const [ nick, setNick ] = useState(userScore.nickname);
+  const [ notes, setNotes ] = useState(userScore.notes);
+
+  console.debug("Edit song: " + country);
 
   const save = () => {
-    let newSongData = songData;
-    newSongData.nickname = nick;
-    newSongData.points = points;
-    newSongData.notes = notes;
-    saveCallback(newSongData);
+    saveCallback({
+      ...userScore,
+      nickname: nick,
+      notes
+    });
   };
   return (
     <Modal
@@ -28,15 +33,15 @@ const EditSong = ({songData, saveCallback, cancelCallback}: Props) => {
       keyboard={true}
     >
       <Modal.Header closeButton>
-        <Modal.Title>{songData.song.country}</Modal.Title>
+        <Modal.Title>{country}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div className="row">
           <div className="col">
-            Artist: <i>{songData.song.artist}</i>
+            Artist: <i>{artist}</i>
           </div>
           <div className="col">
-            Song: <i>{songData.song.song}</i>
+            Song: <i>{song}</i>
           </div>
         </div>
 

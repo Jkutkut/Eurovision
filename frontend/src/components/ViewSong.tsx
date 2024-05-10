@@ -1,28 +1,27 @@
 import { forwardRef, useState } from "react";
 import Song from "../models/Song";
-import {NO_POINTS} from "../models/UserScore";
+import UserScore, {NO_POINTS} from "../models/UserScore";
 
 interface Props {
   song: Song;
-  songScore: any | null; // TODO
-  editCallback: (country: string) => void;
+  songScore: UserScore;
+  editCallback: (song_id: number) => void;
 }
 
 const ViewSong = ({ song: songObj, songScore, editCallback }: Props) => {
   const [ expanded, setExpanded ] = useState(false);
 
-  const {nickname, points, notes} = songScore || {
-    nickname: "",
-    points: NO_POINTS,
-    notes: ""
-  };
+  const {nickname, points, notes} = songScore;
   const { song, artist, country: fullCountry, link } = songObj;
   const countryWords = fullCountry.split(" ");
   const [ countryFlag ] = countryWords;
   const country = countryWords.slice(1).join(" ");
 
   const toggleExpanded = () => setExpanded(!expanded);
-  const editSong = () => editCallback(country);
+  const editSong = (e: any) => {
+    e.stopPropagation();
+    editCallback(songScore.song_id);
+  };
 
   const hasBeenEdited = nickname != "" || points != NO_POINTS || notes != "";
 

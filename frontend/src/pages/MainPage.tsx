@@ -5,6 +5,7 @@ import {
   DragOverlay,
   KeyboardSensor,
   PointerSensor,
+  UniqueIdentifier,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -21,7 +22,7 @@ import {ViewSongRef} from "../components/ViewSong";
 import EditSong from "../components/EditSong";
 
 import useRestAPI from "../hooks/useRestAPI";
-import {NO_POINTS} from "../models/UserScore";
+import UserScore, {NO_POINTS} from "../models/UserScore";
 
 interface Props {
   restAPI: ReturnType<typeof useRestAPI>;
@@ -38,40 +39,22 @@ const MainPage = ({restAPI}: Props) => {
   const [ editorSong, setEditorSong ] = useState(-1);
   const [dragged, setDragged] = useState(null);
 
-  const editSong = (country: string) => {};
-  // const editSong = (country: string) => {
-  //   console.log("Edit song: " + country);
-  //   let song: number = -1;
-  //   for (let i = 0; i < myData.length; i++) {
-  //     if (country == myData[i].song.country) {
-  //       song = i;
-  //       break;
-  //     }
-  //   }
-  //   if (song == -1)
-  //     throw new Error("UPS, i can't find the country");
-  //   setEditorSong(song);
-  // };
+  const editSong = (songId: number) => {
+    setEditorSong(songId);
+  };
 
-  const saveSongData = (newSongData: any) => {}
-  // const saveSongData = (newSongData: SongData) => {
-  //   console.log("Update song data", newSongData);
-  //   let i: number;
+  const saveSongData = (newScore: UserScore) => {
+    for (let i = 0; i < userScores.length; i++) {
+      if (userScores[i].song_id == newScore.song_id) {
+        userScores[i] = newScore;
+        break;
+      }
+    }
+    save(userScores, true);
+    setEditorSong(-1);
+    console.debug("Song data updated", newScore);
+  };
 
-  //   for (i = 0; i < myData.length; i++) {
-  //     if (myData[i].song.country == newSongData.song.country) {
-  //       break;
-  //     }
-  //   }
-  //   if (i == myData.length)
-  //     throw new Error("UPS, i can't find the country");
-  //   myData[i] = newSongData;
-  //   setMyData(myData);
-  //   console.log("Song data updated", i);
-  //   setEditorSong(-1);
-  // };
-
-  // TODO refactor
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {distance: 10}
@@ -141,6 +124,14 @@ const MainPage = ({restAPI}: Props) => {
   );
 
   return <>
+    {editorSong != -1 &&
+      <EditSong
+        song={euroInfo.countries[editorSong]}
+        userScore={userScores.find(score => score.song_id == editorSong)!}
+        saveCallback={saveSongData}
+        cancelCallback={() => setEditorSong(-1)}
+      />
+    }
     <div className="mt-3 ms-3 me-3">
       <div className="row align-items-end">
         <div className="col">
@@ -175,7 +166,7 @@ const MainPage = ({restAPI}: Props) => {
           }
           <SortableContext
             id="ranking"
-            items={ranking}
+            items={ranking as any}
             strategy={verticalListSortingStrategy}
           >
             {ranking.map((songScore: any) => (
@@ -194,7 +185,7 @@ const MainPage = ({restAPI}: Props) => {
       <div className="d-flex flex-column gap-2 p-0 m-3">
         <SortableContext
           id="unranked"
-          items={unranked}
+          items={unranked as any}
           strategy={verticalListSortingStrategy}
         >
           {unranked.map((score: any) => (
