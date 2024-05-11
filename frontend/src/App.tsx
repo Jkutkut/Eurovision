@@ -4,101 +4,50 @@ import Login from './pages/Login';
 import MainPage from './pages/MainPage';
 import ViewSong from './components/ViewSong';
 import Song from './models/Song';
-import {NO_POINTS} from './models/UserScore';
+import {useEffect} from 'react';
+import AdminPage from './pages/adminPage';
 
 const App = () => {
   const [searchParams] = useSearchParams();
   const restAPI = useRestAPI();
-  const { user, login } = restAPI;
-  if (user == null) {
-    return (
-      <Login login={login} />
-    );
-  }
+  const { user, login, users, getUsers } = restAPI;
 
-  const users = ["Marvin", "Jkutkut", "Marvin2", "Jkutkut2", "Marvin3", "Jkutkut3"]; // TODO get from REST API
+  useEffect(() => getUsers(), []);
+
   const isAdmin = searchParams.get('admin') !== null;
   if (isAdmin) {
-    const harakiri = () => {
-      console.warn("Admin harakiri");
-      // TODO
-      console.warn("TODO");
-    };
-    return <>
-      <div className='p-3 d-flex flex-column gap-3'>
-        <div className="alert alert-info">
-          Admin mode.
-        </div>
-        <div>
-          <div className="h5">
-            Users:
-          </div>
-          <div className="list-group">
-            {users.map((user) => (
-              <div key={user}
-                className="list-group-item d-flex justify-content-between align-items-center"
-              >
-                <div>
-                  {user}
-                </div>
-                <div className="text-end">
-                  XX scores
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="d-flex gap-3">
-          <div className="col">
-            <button
-              className="btn btn-primary"
-              onClick={harakiri}
-            >
-              Refresh
-            </button>
-          </div>
-          <div className="col text-end">
-            <button
-              className="btn btn-danger"
-              onDoubleClick={harakiri}
-            >
-              Harakiri (double click)
-            </button>
-          </div>
-        </div>
-      </div>
-    </>;
+    return <AdminPage
+      restAPI={restAPI}
+    />
   }
 
   const isDashboard = searchParams.get('dashboard') !== null;
   if (isDashboard) {
+    if (restAPI.isLoading) {
+      return <div>Loading...</div>;
+    }
+    console.log(restAPI);
     return <>
       <div className='p-3 d-flex flex-column gap-3'>
-        <div className="alert alert-info">
-          Dashboard mode.
-        </div>
-        <div className="">
-          {restAPI.euroInfo?.countries
-            .filter((_: Song, idx: number) => restAPI.userScores[idx].points !== NO_POINTS)
-            .map((song: Song, idx: number) => (
-            <ViewSong key={idx}
-              song={song}
-              songScore={{ // TODO
-                song_id: idx,
-                nickname: "",
-                notes: "",
-                points: restAPI.userScores[idx].points
-              }}
-              editCallback={() => {}}
-            />
-          ))}
-        </div>
-        <div className="d-flex flex-wrap justify-content-center">
-          {users.map((user) => (
-            <div key={user}
-              className="card d-flex flex-row m-2 p-3 ps-3 justify-content-between col-5"
-              style={{
-              }}
+        {restAPI.euroInfo?.countries
+          .map((song: Song, idx: number) => (
+          <ViewSong key={idx}
+            song={song}
+            songScore={{ // TODO
+              song_id: idx,
+              nickname: "",
+              notes: "",
+              points: restAPI.userScores[idx].points
+            }}
+            editCallback={() => {}}
+          />
+        ))}
+      </div>
+      <div className="d-flex flex-wrap justify-content-center fixed-bottom p-3">
+        {users.map((user, idx) => (
+          <div key={user} className="col-6">
+            <div
+              className={`card m-2 d-flex flex-row p-3 justify-content-between ${idx % 2 ? "me-0" : "ms-0"}`}
             >
               <div>
                 {user}
@@ -107,10 +56,16 @@ const App = () => {
                 <input type="checkbox" className="ms-2" />
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </>;
+  }
+
+  if (user == null) {
+    return (
+      <Login login={login} />
+    );
   }
 
   return <>

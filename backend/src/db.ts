@@ -158,8 +158,16 @@ class EurovisionSqliteDB {
 
   // API
   public getUsers() {
-    const stmt = this.db.prepare('SELECT * FROM user');
-    return stmt.all();
+    const users = this.db.prepare('SELECT * FROM user').all();
+    const stmt = this.db.prepare(this.treatSql(
+      `SELECT * FROM score
+       WHERE user_id = ?
+       ORDER BY rank ASC`
+    ));
+    return users.map((u: any) => ({
+      ...u,
+      scores: stmt.all(u.id)
+    }));
   }
 
   public getScores(user: string) {

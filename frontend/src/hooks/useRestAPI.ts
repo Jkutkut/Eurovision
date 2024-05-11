@@ -28,7 +28,10 @@ interface useRestAPIHook {
   logout: () => void,
   euroInfo: EurovisionInfo,
   userScores: UserScore[],
+  users: any[],
+  getUsers: () => void,
   save: (userScores: UserScore[], restSave?: boolean) => void,
+  harakiri: () => void,
   isLoading: boolean
 };
 
@@ -36,16 +39,23 @@ const useRestAPI = () => {
   const {user, login: logUser, logout} = useLogin();
   const [ euroInfo, setEuroInfo ] = useState<any | null>(null);
   const [ userScores, setUserScores ] = useState<any[]>([]);
-  const [ isLoading, setIsLoading ] = useState<boolean>(false);
+  const [ loading, setLoading ] = useState<number>(0);
+  const [ users, setUsers ] = useState<any[]>([]); // TODO model
+
+  const isLoading = loading > 0;
+  const startLoading = () => setLoading(l => l + 1);
+  const endLoading = () => setLoading(l => l - 1);
 
   const login = (username: string) => {
     if (user != null) {
       return;
     }
+    startLoading();
     fetch(API.v2.postUser(username), {method: 'POST'})
     .then(r => {
       if (r.ok) {
         logUser(username);
+        endLoading();
       }
       else {
         throw new Error("Login failed");
@@ -54,9 +64,10 @@ const useRestAPI = () => {
   };
 
   const getEuroInfo = () => {
-    if (euroInfo !== null) {
+    if (!!euroInfo) {
       return;
     }
+    startLoading();
     console.debug("Getting euro info");
     fetch(API.v2.getEuroInfo(), {
       method: 'GET',
@@ -65,11 +76,17 @@ const useRestAPI = () => {
       }
     })
     .then(response => response.json())
-    .then(data => setEuroInfo(data));
+    .then(data => setEuroInfo(data))
+    .then(() => console.debug("Euro info loaded"))
+    .finally(endLoading);
   };
 
   const getScores = (user: string) => {
+    if (user == null) {
+      return;
+    }
     console.debug("Getting scores for " + user);
+    startLoading();
     fetch(API.v2.getScores(user), {
       method: 'GET',
       headers: {
@@ -77,7 +94,9 @@ const useRestAPI = () => {
       }
     })
     .then(response => response.json())
-    .then(data => setUserScores(data));
+    .then(data => setUserScores(data))
+    .then(() => console.debug("Scores loaded"))
+    .finally(endLoading);
   };
 
   const save = (userScores: UserScore[], restSave: boolean = false) => {
@@ -117,22 +136,54 @@ const useRestAPI = () => {
     });
   };
 
+  const getUsers = () => {
+    startLoading();
+    console.debug("Getting users");
+    fetch(API.v2.getUsers(), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => setUsers(data))
+    .then(() => console.debug("Users loaded"))
+    .finally(endLoading);
+  };
+
+  const harakiri = () => {
+    console.warn("Harakiri");
+    startLoading();
+    fetch(API.v2.harakiri(), {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(r => {
+      endLoading();
+      if (!r.ok) {
+        return;
+      }
+      if (users) {
+        getUsers();
+      }
+      if (user) {
+        logout();
+      }
+      if (userScores) {
+        setUserScores([]);
+      }
+    });
+  };
+
+  useEffect(() => getEuroInfo(), []);
   useEffect(() => {
     if (user == null) {
       return;
     }
-    setIsLoading(true);
-    getEuroInfo();
     getScores(user);
   }, [user]);
-
-  useEffect(() => {
-    const currentIsLoading = user == null ||
-      (euroInfo == null || userScores.length == 0);
-    if (currentIsLoading != isLoading) {
-      setIsLoading(currentIsLoading);
-    }
-  }, [user, euroInfo, userScores]);
 
   return {
     user,
@@ -140,7 +191,10 @@ const useRestAPI = () => {
     logout,
     euroInfo,
     userScores,
+    users,
+    getUsers,
     save,
+    harakiri,
     isLoading
   } as useRestAPIHook;
 };
