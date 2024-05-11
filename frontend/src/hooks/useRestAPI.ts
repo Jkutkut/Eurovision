@@ -5,9 +5,13 @@ import useLogin from "./useLogin";
 import UserScore, {NO_POINTS} from "../models/UserScore";
 import EurovisionInfo from "../models/EurovisionInfo";
 
+
+const apiPort = window.location.port == '' ? '' : ':9000';
+const apiBaseEndpoint = window.location.port == '' ? '/eurovision' : '';
+
 const API  = {
-  // TODO handle host + port
-  host: (() => `http://${window.location.hostname}:9000`)(),
+  // TODO handle port & base endpoint
+  host: `${window.location.protocol}//${window.location.hostname}${apiPort}${apiBaseEndpoint}`,
   v1: {
     getDataUser: (user: string) => `${API.host}/api/v1/${user}`,
     postDataUser: (user: string) => `${API.host}/api/v1/${user}`
