@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import { EurovisionDB, EurovisionSqliteDB } from './src/db';
 
 const cors = require('cors');
-const path = require('path');
 dotenv.config();
 
 const app: Express = express();

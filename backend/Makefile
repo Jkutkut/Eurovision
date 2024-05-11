@@ -11,13 +11,25 @@ PORT = 9000
 
 DOCKER_CMD = docker run --rm -it
 DOCKER_APP_V = -v ${CURRENT_PATH}/:/app -w /app
-DOCKER_IMG_FRONT = node:current-alpine3.16
+DOCKER_IMG_BACK = node:current-alpine3.16
 
 install:
-	${DOCKER_CMD} --name ${FRONT_NAME}_installer --entrypoint=npm ${DOCKER_IMG_FRONT} install
+	${DOCKER_CMD} --name ${FRONT_NAME}_installer --entrypoint=npm ${DOCKER_IMG_BACK} install
 
 run:
-	$(DOCKER_CMD) --name ${FRONT_NAME} -p ${PORT}:${PORT} ${DOCKER_APP_V} --entrypoint=npm -e PORT=${PORT} ${DOCKER_IMG_FRONT} run dev
+	$(DOCKER_CMD) --name ${FRONT_NAME} -p ${PORT}:${PORT} ${DOCKER_APP_V} --entrypoint=npm -e PORT=${PORT} ${DOCKER_IMG_BACK} run dev
+
+build:
+	${DOCKER_CMD} --name ${FRONT_NAME}_builder ${DOCKER_APP_V} --entrypoint=npm ${DOCKER_IMG_BACK} run build
+
+run_build:
+	docker run -d --restart=always --name ${FRONT_NAME} -p ${PORT}:${PORT} ${DOCKER_APP_V} --entrypoint=node ${DOCKER_IMG_BACK} dist/index.js
+
+stop:
+	docker stop ${FRONT_NAME}
+
+remove:
+	docker rm -f ${FRONT_NAME}
 
 terminal:
-	$(DOCKER_CMD) --name ${FRONT_NAME}_terminal ${DOCKER_APP_V} --entrypoint=/bin/sh ${DOCKER_IMG_FRONT}
+	$(DOCKER_CMD) --name ${FRONT_NAME}_terminal ${DOCKER_APP_V} --entrypoint=/bin/sh ${DOCKER_IMG_BACK}
