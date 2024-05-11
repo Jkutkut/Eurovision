@@ -202,7 +202,7 @@ const MainPage = ({restAPI}: Props) => {
             song={euroInfo.countries[dragged]}
             songScore={userScores.find(
               score => score["song_id"] == dragged
-            )}
+            )!}
             editCallback={editSong}
           />}
         </DragOverlay>

@@ -6,9 +6,10 @@ interface Props {
   song: Song;
   songScore: UserScore;
   editCallback: (song_id: number) => void;
+  ref?: any;
 }
 
-const ViewSong = ({ song: songObj, songScore, editCallback }: Props) => {
+const ViewSong = ({ song: songObj, songScore, editCallback, ref }: Props) => {
   const [ expanded, setExpanded ] = useState(false);
 
   const {nickname, points, notes} = songScore;
@@ -26,7 +27,7 @@ const ViewSong = ({ song: songObj, songScore, editCallback }: Props) => {
   const hasBeenEdited = nickname != "" || points != NO_POINTS || notes != "";
 
   return <>
-    <div className="card" style={{"touchAction": "none"}}>
+    <div ref={ref} className="card" style={{"touchAction": "none"}}>
       <div className="card-body" onClick={toggleExpanded}>
         <div className="row d-flex align-items-center">
           <div className="col text-truncate pe-0">

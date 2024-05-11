@@ -8,7 +8,7 @@ interface Props {
 }
 
 export const Dropable = ({id, className, style, children}: Props) => {
-  const {isOver, setNodeRef} = useDroppable({
+  const {setNodeRef} = useDroppable({
     id
   });
   const componentStyle = {

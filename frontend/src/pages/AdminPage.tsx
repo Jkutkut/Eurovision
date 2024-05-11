@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import User from '../models/User';
 import UserScore, {NO_POINTS} from '../models/UserScore';
 import ConfirmModal from '../components/ConfirmModal';
@@ -12,6 +12,8 @@ interface Props {
 const AdminPage = ({restAPI: { users, getUsers, euroInfo, harakiri, isLoading }}: Props) => {
   const [ refreshed, setRefreshed ] = useState<boolean>(false);
   const [ harakiriModal, setHarakiriModal ] = useState<boolean>(false);
+
+  useEffect(getUsers, []);
 
   const refresh = () => {
     getUsers();
