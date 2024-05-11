@@ -20,6 +20,12 @@ const AdminPage = ({restAPI: { users, getUsers, euroInfo, harakiri, isLoading }}
     setRefreshed(true);
     setTimeout(() => setRefreshed(false), 1000);
   };
+
+  const doHarakiri = () => {
+    harakiri();
+    setHarakiriModal(false);
+  }
+
   return <>
     {harakiriModal &&
       <ConfirmModal
@@ -27,7 +33,7 @@ const AdminPage = ({restAPI: { users, getUsers, euroInfo, harakiri, isLoading }}
         cancelLabel="No"
         confirmLabel="Yes"
         cancelCallback={() => setHarakiriModal(false)}
-        confirmCallback={harakiri}
+        confirmCallback={doHarakiri}
       >
         <div>
           <p>
