@@ -13,6 +13,13 @@ DOCKER_CMD = docker run --rm -it
 DOCKER_APP_V = -v ${CURRENT_PATH}/:/app -w /app
 DOCKER_IMG_FRONT = node:current-alpine3.16
 
+DEPENDENCIES = \
+	$(shell find ./index.html -type f) \
+	$(shell find ./*.json -type f) \
+	$(shell find ./src -type f)
+
+RELEASE=./dist
+
 install:
 	${DOCKER_CMD} --name ${FRONT_NAME}_installer --entrypoint=npm ${DOCKER_IMG_FRONT} install
 
@@ -22,8 +29,13 @@ run_front:
 terminal_front:
 	$(DOCKER_CMD) --name ${FRONT_NAME}_terminal ${DOCKER_APP_V} --entrypoint=/bin/sh ${DOCKER_IMG_FRONT}
 
-build:
+build: $(RELEASE)
+
+$(RELEASE): $(DEPENDENCIES)
 	$(DOCKER_CMD) --name ${FRONT_NAME}_build ${DOCKER_APP_V} --entrypoint=npm ${DOCKER_IMG_FRONT} run build
 
 qr:
 	docker run -it --rm jkutkut/py-qr ${shell hostname -I | awk '{print $$1}'}:${PORT_FRONT}
+
+clean:
+	rm -rf $(RELEASE)
