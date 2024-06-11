@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "build": "npx tsc",
+    "build": "npx tsc && cp -r public dist/public && cp -r db dist/db && cp Makefile.prod dist/Makefile && cp -r node_modules dist/ && cp .env dist/",
     "start": "node dist/index.ts",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon dist/index.js --ignore ./db/ $PORT \""
   },
